@@ -77,7 +77,7 @@ void SerialPort::processLine(String &line) {
     Serial.println(NUM_NUMERICS);
     Serial.print(F("Strings="));
     Serial.println(NUM_STRINGS);
-    Serial.print(F("Max Program   Size="));
+    Serial.print(F("Max Program Size="));
     Serial.println(MAX_PROGRAM_SIZE);
     Serial.print(F("Current Program Size="));
     Serial.println(_program->getProgramSize());
@@ -168,7 +168,6 @@ void SerialPort::processLine(String &line) {
         value = true;
       }
       _memory->writeBoolean(address, value);
-      printSuccess(true);
     }
   }
   else if(line.startsWith("read n")) {

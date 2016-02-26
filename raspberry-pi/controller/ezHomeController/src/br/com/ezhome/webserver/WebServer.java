@@ -24,9 +24,10 @@ public class WebServer {
    public static void create(int port) throws IOException {
       if (instance == null) {
          instance = new WebServer(port);
+         System.out.println("Criado na porta " + port);
       }
    }
-   
+
    public static void create() throws IOException {
       create(8080);
    }

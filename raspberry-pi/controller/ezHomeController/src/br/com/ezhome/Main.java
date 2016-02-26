@@ -1,5 +1,6 @@
 package br.com.ezhome;
 
+import br.com.ezhome.comports.TwoWaySerialComm;
 import java.io.IOException;
 
 /**
@@ -11,8 +12,9 @@ public class Main {
    /**
     * @param args the command line arguments
     */
-   public static void main(String[] args) throws IOException {
-      new Controller();
+   public static void main(String[] args) throws Exception {
+      //new Controller();
+      TwoWaySerialComm.main(args);
    }
    
 }
