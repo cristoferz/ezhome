@@ -1,4 +1,4 @@
-package br.com.ezhome.comports;
+package br.com.ezhome.device;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;

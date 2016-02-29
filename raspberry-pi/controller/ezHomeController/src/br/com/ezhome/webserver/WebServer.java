@@ -1,5 +1,7 @@
 package br.com.ezhome.webserver;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -35,7 +37,17 @@ public class WebServer {
    private WebServer(int port) throws IOException {
       httpServer = HttpServer.create(new InetSocketAddress(port), 0);
       httpServer.setExecutor(null);
-      httpServer.createContext("/status");
+      httpServer.createContext("/status", new HttpHandler() {
+
+         @Override
+         public void handle(HttpExchange he) throws IOException {
+            System.out.println("teste");
+            
+            he.sendResponseHeaders(200, 0);
+            he.getResponseBody().close();
+         }
+      });
+      httpServer.createContext("/device/", new HttpHandlerDevice());
       httpServer.start();
    }
 

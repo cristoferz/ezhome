@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.ezhome.comports;
+package br.com.ezhome.device;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;

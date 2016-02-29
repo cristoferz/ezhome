@@ -1,6 +1,7 @@
 package br.com.ezhome;
 
-import br.com.ezhome.comports.ComPortReader;
+import br.com.ezhome.device.ComPortReader;
+import br.com.ezhome.device.PortConnector;
 import br.com.ezhome.webserver.WebServer;
 import java.io.IOException;
 
@@ -12,10 +13,12 @@ public class Controller {
    private WebServer webServer;
 
    public Controller() throws Exception {
-      //WebServer.create();
-      //webServer = WebServer.getInstance();
+      WebServer.create();
+      webServer = WebServer.getInstance();
       
-      ComPortReader.main(new String[] {} );
+      PortConnector.main(new String[0]);
+      
+      //ComPortReader.main(new String[] {} );
    }
    
    

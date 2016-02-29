@@ -1,4 +1,4 @@
-package br.com.ezhome.comports;
+package br.com.ezhome.device;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,13 +15,15 @@ public class PortReader extends Thread {
 
    private static final String END_OF_MESSAGE = "EOM";
 
+   private PortConnector connector;
    private InputStream in;
    private StringBuilder stringBuilder;
    private BufferedReader bufferedReader;
 
    private ArrayList<PortReaderListener> listeners;
 
-   public PortReader(InputStream in) {
+   public PortReader(PortConnector connector, InputStream in) {
+      this.connector = connector;
       this.in = in;
       stringBuilder = new StringBuilder();
       bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -36,7 +38,6 @@ public class PortReader extends Thread {
          while (true) {
             if (bufferedReader.ready()) {
                line = bufferedReader.readLine();
-               System.out.println("read " + line);
                if (line == null) {
                   break;
                }

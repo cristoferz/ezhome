@@ -1,4 +1,4 @@
-package br.com.ezhome.comports;
+package br.com.ezhome.device;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,9 +9,11 @@ import java.io.OutputStream;
  * @author cristofer
  */
 public class PortWriter {
+   private PortConnector connector;
    private OutputStream outputStream;
 
-   public PortWriter(OutputStream outputStream) {
+   public PortWriter(PortConnector connector, OutputStream outputStream) {
+      this.connector = connector;
       this.outputStream = outputStream;
    }
    
