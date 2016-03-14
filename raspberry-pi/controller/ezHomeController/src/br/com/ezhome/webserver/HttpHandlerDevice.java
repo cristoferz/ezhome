@@ -2,7 +2,6 @@ package br.com.ezhome.webserver;
 
 import br.com.ezhome.device.PortConnector;
 import br.com.ezhome.device.PortManager;
-import br.com.ezhome.device.PortReaderAdapter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import gnu.io.CommPortIdentifier;
@@ -11,8 +10,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -89,8 +86,21 @@ public class HttpHandlerDevice implements HttpHandler {
                exchange.sendResponseHeaders(500, json.toString().getBytes().length);
             }
             os.write(json.toString().getBytes());
-//         } else if (path.equals("/device/disconnect")) {
-//            // Desconecta do arduino
+         } else if (path.equals("/device/disconnect")) {
+            // Desconecta do arduino
+            JSONObject json = new JSONObject();
+            
+            PortConnector connector = PortManager.getInstance().get(urlParameters.get("device"));
+            if (connector == null) {
+               json.put("success", false);
+               json.put("message", "Device " + urlParameters.get("device") + " is not connected.");
+               exchange.sendResponseHeaders(500, json.toString().getBytes().length);               
+            } else {
+               connector.close();
+               json.put("success", true);
+               exchange.sendResponseHeaders(200, json.toString().getBytes().length);
+            }
+            os.write(json.toString().getBytes());
 //         } else if (path.equals("/device/firmwareWrite")) {
 //            // Grava o firmware no arduino
 //         } else if (path.equals("/device/upload")) {
@@ -114,13 +124,13 @@ public class HttpHandlerDevice implements HttpHandler {
             os.write(response.getBytes());
          }
       } catch (Throwable ex) {
+         ex.printStackTrace();
          JSONObject json = new JSONObject();
          json.put("success", false);
          json.put("message", ex.getMessage());
          json.put("exception", ex);
          exchange.sendResponseHeaders(500, json.toString().getBytes().length);
          os.write(json.toString().getBytes());
-         ex.printStackTrace();
       } finally {
          os.close();
       }

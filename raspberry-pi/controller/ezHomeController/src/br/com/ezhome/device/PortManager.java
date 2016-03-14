@@ -57,6 +57,14 @@ public class PortManager {
    public PortConnector connect(String name) throws Exception {
       return connect(CommPortIdentifier.getPortIdentifier(name));
    }
+   
+   public PortConnector get(String name) {
+      return connectedPorts.get(name);
+   }
+   
+   protected void remove(PortConnector connector) {
+      connectedPorts.remove(connector.getName());
+   }
 
    /**
     * List the serial ports that stills not connected

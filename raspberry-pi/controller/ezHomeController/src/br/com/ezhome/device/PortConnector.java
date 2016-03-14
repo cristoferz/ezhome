@@ -36,7 +36,6 @@ public class PortConnector {
          @Override
          public void messageReceived(String message) {
             receivedMessage = message;
-            System.out.println("chegou");
          }
          
       };
@@ -92,11 +91,16 @@ public class PortConnector {
    public String sendCommand(String command) throws IOException {
       return sendCommand(command, COMMAND_TIMEOUT);
    }
+   
+   public void write(byte[] value) throws IOException {
+      getWriter().write(value);
+   }
 
    public void close() throws IOException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
       reader.close();
       writer.close();
       serialPort.close();
+      manager.remove(this);
    }
 
    public static void main(String[] args) throws Exception {
