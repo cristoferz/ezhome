@@ -19,6 +19,7 @@ public class ParallelSeries extends ProgramInstruction implements ProgramSeriesB
       this.series = new ArrayList<>();
    }
    
+   @Override
    public ProgramSeries createSerie() {
       ProgramSeries serie = new ProgramSeries();
       series.add(serie);

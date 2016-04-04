@@ -6,4 +6,5 @@ package br.com.ezhome.device.program;
  */
 public interface ProgramSeriesBuilder {
    public ByteArrayBuilder getArrayBuilder();
+   public ProgramSeries createSerie();
 }
