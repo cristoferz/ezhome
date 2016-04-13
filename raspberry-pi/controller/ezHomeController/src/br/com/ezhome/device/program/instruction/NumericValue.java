@@ -8,4 +8,6 @@ public class NumericValue {
    
    private boolean constant, typeFloat;
    private int length;
+   private long value;
+   
 }
