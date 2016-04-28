@@ -2,10 +2,13 @@ package br.com.ezhome.webserver;
 
 import br.com.ezhome.device.PortConnector;
 import br.com.ezhome.device.PortManager;
+import br.com.ezhome.device.program.ProgramBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import gnu.io.CommPortIdentifier;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -42,13 +45,33 @@ public class HttpHandlerDevice implements HttpHandler {
       }
       return result;
    }
-
+   
+   public HashMap<String, String> getUrlParameters(HttpExchange exchange) {
+      return queryToMap(exchange.getRequestURI().getQuery());
+   }
+   
+   public HashMap<String, String> getPostParameters(HttpExchange exchange) throws IOException {
+      StringBuilder sb = new StringBuilder();
+      BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+      try {
+         int len;
+         char[] buf = new char[1024];
+         while((len = reader.read(buf)) != -1) {
+            sb.append(buf);
+         }
+      } finally {
+         reader.close();
+      }
+      return queryToMap(sb.toString());
+   }
+   
    @Override
    public void handle(HttpExchange exchange) throws IOException {
       OutputStream os = exchange.getResponseBody();
       try {
          String path = exchange.getRequestURI().getPath();
-         HashMap<String, String> urlParameters = queryToMap(exchange.getRequestURI().getQuery());
+         
+         
          if (path.equals("/device/list")) {
             JSONObject json = new JSONObject();
             JSONArray devices = new JSONArray();
@@ -77,7 +100,7 @@ public class HttpHandlerDevice implements HttpHandler {
             JSONObject json = new JSONObject();
 
             try {
-               PortManager.getInstance().connect(urlParameters.get("device"));
+               PortManager.getInstance().connect(getUrlParameters(exchange).get("device"));
                json.put("success", true);
                exchange.sendResponseHeaders(200, json.toString().getBytes().length);
             } catch (Exception ex) {
@@ -89,7 +112,7 @@ public class HttpHandlerDevice implements HttpHandler {
          } else if (path.equals("/device/disconnect")) {
             // Desconecta do arduino
             JSONObject json = new JSONObject();
-            
+            HashMap<String, String> urlParameters = getUrlParameters(exchange);
             PortConnector connector = PortManager.getInstance().get(urlParameters.get("device"));
             if (connector == null) {
                json.put("success", false);
@@ -110,6 +133,7 @@ public class HttpHandlerDevice implements HttpHandler {
 //         } else if (path.equals("/device/upload")) {
 //            
          } else if (path.equals("/device/send")) {
+            HashMap<String, String> urlParameters = getUrlParameters(exchange);
             PortConnector connector = PortManager.getInstance().connect(urlParameters.get("device"));
             String result = connector.sendCommand(urlParameters.get("command"));
             JSONObject json = new JSONObject();
@@ -117,7 +141,21 @@ public class HttpHandlerDevice implements HttpHandler {
             json.put("result", result);
             exchange.sendResponseHeaders(200, json.toString().getBytes().length);
             os.write(json.toString().getBytes());
+         } else if (path.equals("/device/program")) {
+            HashMap<String, String> postParameters = getPostParameters(exchange);
+            PortConnector connector = PortManager.getInstance().connect(postParameters.get("device"));
+            String program = postParameters.get("program");
+            System.out.println(program);
+            JSONObject obj = new JSONObject(program);
+            ProgramBuilder builder = new ProgramBuilder((byte) 0x6, (byte) 0x6, "0987654321123456", "1234567890098765");
+            builder.loadJSON(obj);
+            builder.sendProgram(connector);
             
+            JSONObject json = new JSONObject();
+            json.put("success", true);
+            json.put("result", "OK");
+            exchange.sendResponseHeaders(200, json.toString().getBytes().length);
+            os.write(json.toString().getBytes());
          } else {
             String response = "Invalid URL: " + path;
             exchange.sendResponseHeaders(404, response.getBytes().length);
