@@ -3,7 +3,10 @@ package br.com.ezhome.webserver;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetSocketAddress;
 
 /**
@@ -44,6 +47,11 @@ public class WebServer {
             System.out.println("teste");
             
             he.sendResponseHeaders(200, 0);
+            BufferedReader r = new BufferedReader(new InputStreamReader(he.getRequestBody()));
+            String line;
+            while((line = r.readLine()) != null) {
+               System.out.println(line);
+            }
             he.getResponseBody().close();
          }
       });

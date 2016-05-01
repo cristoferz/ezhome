@@ -4,6 +4,7 @@ import br.com.ezhome.device.PortConnector;
 import br.com.ezhome.device.PortManager;
 import br.com.ezhome.device.PortReaderAdapter;
 import br.com.ezhome.device.program.instruction.Coil;
+import br.com.ezhome.device.program.instruction.FallingEdge;
 import br.com.ezhome.device.program.instruction.NC;
 import br.com.ezhome.device.program.instruction.NO;
 import br.com.ezhome.device.program.instruction.ParallelSeries;
@@ -198,9 +199,27 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
 
    private ProgramInstruction parseInstruction(JSONObject json) throws Exception {
       if (json.has("NO")) {
-         return new NO(this, json.getInt("NO"));
+         if (json.get("NO") instanceof Boolean) {
+            return new NO(this, json.getBoolean("NO"));
+         } else {
+            return new NO(this, json.getInt("NO"));
+         }
       } else if (json.has("NC")) {
-         return new NC(this, json.getInt("NC"));
+         if (json.get("NC") instanceof Boolean) {
+            return new NC(this, json.getBoolean("NC"));
+         } else {
+            return new NC(this, json.getInt("NC"));
+         }
+      } else if (json.has("RisingEdge")) {
+         return new RisingEdge(this, json.getInt("RisingEdge"));
+      } else if (json.has("FallingEdge")) {
+         return new FallingEdge(this, json.getInt("FallingEdge"));
+      } else if (json.has("SetReset")) {
+         if (json.getJSONObject("SetReset").get("reset") instanceof Boolean) {
+            return new SetReset(this, json.getJSONObject("SetReset").getInt("address"), json.getJSONObject("SetReset").getBoolean("reset"));
+         } else {
+            return new SetReset(this, json.getJSONObject("SetReset").getInt("address"), json.getJSONObject("SetReset").getInt("reset"));
+         }
       } else if (json.has("Coil")) {
          return new Coil(this, json.getInt("Coil"));
       } else if (json.has("Parallel")) {

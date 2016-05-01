@@ -145,7 +145,6 @@ public class HttpHandlerDevice implements HttpHandler {
             HashMap<String, String> postParameters = getPostParameters(exchange);
             PortConnector connector = PortManager.getInstance().connect(postParameters.get("device"));
             String program = postParameters.get("program");
-            System.out.println(program);
             JSONObject obj = new JSONObject(program);
             ProgramBuilder builder = new ProgramBuilder((byte) 0x6, (byte) 0x6, "0987654321123456", "1234567890098765");
             builder.loadJSON(obj);
