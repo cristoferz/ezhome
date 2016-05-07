@@ -239,8 +239,6 @@ void Engine::risingEdge() {
   boolean newValue = _rungCondition || _preScan; // set to prevent output triggering on first scan
   _memory->writeBoolean(address, newValue);
   _rungCondition = !lastValue && _rungCondition && !_preScan;
-  if (_rungCondition) 
-    Serial.println("rise");
 }
 
 void Engine::fallingEdge() {

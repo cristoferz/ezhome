@@ -10,29 +10,43 @@ fi
 
 case $OPCAO in
 	1)
-curl http://192.168.1.29:8080/device/program -X POST --data 'device=/dev/ttyACM0&program={ "program": 
-   [ { "serie": [ 
-        { "Parallel": [ 
-           { "serie": [ { "NO": 9 } ] }, 
-           { "serie": [ { "NC": 49 } ] } 
-        ] } , 
-        { "Parallel": [ 
-           { "serie": [ { "NC": 9 } ] }, 
-           { "serie": [ { "NO": 49 } ] } 
-        ] }, 
-        { "Coil": 4 } 
+curl http://192.168.1.29:8080/device/program -X POST --data 'device=/dev/ttyACM0&program={ "program":
+   [ { "serie": [
+        { "Parallel": [
+           { "serie": [
+              { "NO": 9 },
+              { "Parallel": [
+                 { "serie": [
+                    { "FallingEdge": 100 }
+                 ] },
+                 { "serie": [
+                    { "RisingEdge": 101 }
+                 ] }
+              ] }
+           ] }
+        ] },
+        { "SetReset": { "address": 4, "reset": 4} }
      ] },
      { "serie": [
         { "Parallel": [
-           { "serie": [ { "NO": 10 } ] },
-           { "serie": [ { "NC": 50 } ] }
-        ] } ,
-        { "Parallel": [
-           { "serie": [ { "NC": 10 } ] },
-           { "serie": [ { "NO": 50 } ] }
+           { "serie": [
+              { "NO": 10 },
+              { "Parallel": [
+                 { "serie": [
+                    { "FallingEdge": 104 }
+                 ] },
+                 { "serie": [
+                    { "RisingEdge": 105 }
+                 ] }
+              ] }
+           ] },
+           { "serie": [
+              { "NO": 5 },
+              { "RisingEdge": 106 }
+           ] }
         ] },
-        { "Coil": 2 }
-     ] } 
+        { "SetReset": { "address": 2, "reset": 2} }
+     ] },
    ] }';
 	;;
 	2)
@@ -68,6 +82,28 @@ curl http://192.168.1.29:8080/device/program -X POST --data 'device=/dev/ttyACM0
            ] }
         ] },
         { "SetReset": { "address": 2, "reset": 2} }
+     ] },
+     { "serie": [
+        { "NO": $CONTROLE_REMOTO },
+        { "RisingEdge": $CONTROLE_REMOTO_EDGE },
+        { "SetReset": { "address": $ALARME_LIGADO, "reset": $ALARME_LIGADO } }
+     ] },
+     { "serie": [
+        { "Parallel": [
+           { "serie": [ 
+              { "NC": $SENSOR1 }
+           ] },
+           { "serie": [ 
+              { "NC": $SENSOR2 }
+           ] }
+        ] },
+        { "NO": $ALARME_LIGADO },
+        { "SetReset": { "address": $ALARME_DISPARO, "reset": false } }
+     ] },
+     { "serie": [
+        { "NO": $ALARME_LIGADO },
+        { "FallingEdge": $ALARME_LIGADO_EDGE },
+        { "SetReset": { "address": $ALARME_DISPARO, "reset": true } }
      ] }
    ] }';
 
