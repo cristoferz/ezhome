@@ -1,6 +1,7 @@
 package br.com.ezhome.device.program.instruction;
 
 import br.com.ezhome.device.program.ByteArrayBuilder;
+import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
 
@@ -10,10 +11,10 @@ import br.com.ezhome.device.program.ProgramSeriesBuilder;
  */
 public class NO extends ProgramInstruction {
 
-   private int address;
+   private ProgramAddress address;
    private boolean constant, value;
 
-   public NO(ProgramBuilder builder, int address) {
+   public NO(ProgramBuilder builder, ProgramAddress address) {
       super(builder);
       this.constant = false;
       this.address = address;
@@ -56,7 +57,7 @@ public class NO extends ProgramInstruction {
          builder.getArrayBuilder().appendBit(value);
       } else {
          builder.getArrayBuilder().appendBit(true);
-         builder.getArrayBuilder().append(address, getBuilder().getBitsPerBoolAddress(), false, true);
+         builder.getArrayBuilder().append(address.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
       }
    }
 

@@ -58,10 +58,10 @@
 </layers>
 <board>
 <plain>
-<wire x1="0" y1="0" x2="100" y2="0" width="0" layer="20"/>
-<wire x1="100" y1="0" x2="100" y2="80" width="0" layer="20"/>
-<wire x1="100" y1="80" x2="0" y2="80" width="0" layer="20"/>
-<wire x1="0" y1="80" x2="0" y2="0" width="0" layer="20"/>
+<wire x1="0" y1="0" x2="42.85" y2="0" width="0" layer="20"/>
+<wire x1="42.85" y1="0" x2="42.85" y2="82.54" width="0" layer="20"/>
+<wire x1="42.85" y1="82.54" x2="0" y2="82.54" width="0" layer="20"/>
+<wire x1="0" y1="82.54" x2="0" y2="0" width="0" layer="20"/>
 </plain>
 <libraries>
 <library name="pinhead">
@@ -250,34 +250,6 @@
 <text x="-2.54" y="-3.175" size="1.27" layer="27">&gt;VALUE</text>
 <rectangle x1="-1.524" y1="-0.254" x2="-1.016" y2="0.254" layer="51"/>
 <rectangle x1="1.016" y1="-0.254" x2="1.524" y2="0.254" layer="51"/>
-</package>
-</packages>
-</library>
-<library name="optocoupler">
-<description>&lt;b&gt;Opto Couplers&lt;/b&gt;&lt;p&gt;
-Siemens, Hewlett-Packard, Texas Instuments, Sharp, Motorola&lt;p&gt;
-&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
-<packages>
-<package name="DIP4">
-<description>&lt;b&gt;DIP 4&lt;/b&gt; 300 mil&lt;p&gt;
-Source: http://www.vishay.com/docs/83673/sfh618.pdf</description>
-<wire x1="2.315" y1="3.18" x2="2.315" y2="-3.18" width="0.1524" layer="21"/>
-<wire x1="-2.315" y1="-1.085" x2="-2.315" y2="3.18" width="0.1524" layer="21"/>
-<wire x1="-2.315" y1="3.18" x2="2.315" y2="3.18" width="0.1524" layer="21"/>
-<wire x1="2.315" y1="-3.18" x2="-2.315" y2="-3.18" width="0.1524" layer="21"/>
-<wire x1="-2.315" y1="-2.13" x2="-2.315" y2="-1.085" width="0.1524" layer="21" curve="180"/>
-<wire x1="-2.315" y1="-3.18" x2="-2.315" y2="-2.13" width="0.1524" layer="21"/>
-<wire x1="-2.315" y1="-2.13" x2="-2.315" y2="-1.085" width="0.1524" layer="21"/>
-<pad name="1" x="-1.27" y="-3.81" drill="0.8"/>
-<pad name="2" x="1.27" y="-3.81" drill="0.8"/>
-<pad name="3" x="1.27" y="3.81" drill="0.8"/>
-<pad name="4" x="-1.27" y="3.81" drill="0.8"/>
-<text x="-2.54" y="-3.175" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
-<text x="3.81" y="-3.175" size="1.27" layer="27" ratio="10" rot="R90">&gt;VALUE</text>
-<rectangle x1="-1.651" y1="-3.925" x2="-0.889" y2="-3.2" layer="51"/>
-<rectangle x1="0.889" y1="-3.925" x2="1.651" y2="-3.2" layer="51"/>
-<rectangle x1="0.889" y1="3.2" x2="1.651" y2="3.925" layer="51" rot="R180"/>
-<rectangle x1="-1.651" y1="3.2" x2="-0.889" y2="3.925" layer="51" rot="R180"/>
 </package>
 </packages>
 </library>
@@ -1505,7 +1477,7 @@ design rules under a new name.</description>
 <param name="Efforts" value="0"/>
 <param name="TopRouterVariant" value="1"/>
 <param name="tpViaShape" value="round"/>
-<param name="PrefDir.1" value="a"/>
+<param name="PrefDir.1" value="0"/>
 <param name="PrefDir.2" value="0"/>
 <param name="PrefDir.3" value="0"/>
 <param name="PrefDir.4" value="0"/>
@@ -1595,300 +1567,155 @@ design rules under a new name.</description>
 </pass>
 </autorouter>
 <elements>
-<element name="JP1" library="pinhead" package="1X17" value="" x="-35.56" y="59.69"/>
-<element name="JP2" library="pinhead" package="1X17" value="" x="-35.56" y="66.04"/>
-<element name="JP3" library="pinhead" package="1X02" value="" x="-60.96" y="66.04"/>
-<element name="OK1" library="optocoupler" package="DIP4" value="SFH618A-2" x="-17.78" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-17.78" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-17.78" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-17.78" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-17.78" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="JP1" library="pinhead" package="1X17" value="" x="19.05" y="55.88" rot="R270"/>
+<element name="JP3" library="pinhead" package="1X02" value="" x="20.32" y="2.54"/>
+<element name="R4" library="resistor" package="M0805" value="" x="22.86" y="68.58"/>
+<element name="R11" library="resistor" package="M0805" value="" x="15.24" y="50.8"/>
+<element name="R9" library="resistor" package="M0805" value="" x="15.24" y="55.88"/>
+<element name="R13" library="resistor" package="M0805" value="" x="15.24" y="45.72"/>
+<element name="R14" library="resistor" package="M0805" value="" x="15.24" y="43.18"/>
+<element name="R2" library="resistor" package="M0805" value="" x="22.86" y="73.66"/>
+<element name="R6" library="resistor" package="M0805" value="" x="22.86" y="63.5"/>
+<element name="R3" library="resistor" package="M0805" value="" x="22.86" y="71.12"/>
+<element name="R15" library="resistor" package="M0805" value="" x="15.24" y="40.64"/>
+<element name="R16" library="resistor" package="M0805" value="" x="15.24" y="38.1"/>
+<element name="R10" library="resistor" package="M0805" value="" x="15.24" y="53.34"/>
+<element name="R12" library="resistor" package="M0805" value="" x="15.24" y="48.26"/>
+<element name="R7" library="resistor" package="M0805" value="" x="22.86" y="60.96"/>
+<element name="R8" library="resistor" package="M0805" value="" x="22.86" y="58.42"/>
+<element name="R1" library="resistor" package="M0805" value="" x="22.86" y="76.2" rot="R180"/>
+<element name="X1" library="con-wago-500" package="W237-102" value="" x="6.35" y="76.2" rot="R270">
+<attribute name="MF" value="" x="6.35" y="76.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="76.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="76.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="76.2" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK10" library="optocoupler" package="DIP4" value="SFH618A-2" x="16.51" y="72.39" rot="R270">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="16.51" y="72.39" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="16.51" y="72.39" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="16.51" y="72.39" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="16.51" y="72.39" size="1.778" layer="27" rot="R270" display="off"/>
+<element name="X10" library="con-wago-500" package="W237-102" value="" x="36.83" y="15.24" rot="R90">
+<attribute name="MF" value="" x="36.83" y="15.24" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="15.24" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="15.24" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="15.24" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK11" library="optocoupler" package="DIP4" value="SFH618A-2" x="-35.56" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-35.56" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-35.56" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-35.56" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-35.56" y="17.78" size="1.778" layer="27" display="off"/>
+<element name="X11" library="con-wago-500" package="W237-102" value="" x="36.83" y="25.4" rot="R90">
+<attribute name="MF" value="" x="36.83" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK12" library="optocoupler" package="DIP4" value="SFH618A-2" x="-44.45" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-44.45" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-44.45" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-44.45" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-44.45" y="17.78" size="1.778" layer="27" display="off"/>
+<element name="X12" library="con-wago-500" package="W237-102" value="" x="36.83" y="35.56" rot="R90">
+<attribute name="MF" value="" x="36.83" y="35.56" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="35.56" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="35.56" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="35.56" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK13" library="optocoupler" package="DIP4" value="SFH618A-2" x="-53.34" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-53.34" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-53.34" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-53.34" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-53.34" y="17.78" size="1.778" layer="27" display="off"/>
+<element name="X13" library="con-wago-500" package="W237-102" value="" x="36.83" y="45.72" rot="R90">
+<attribute name="MF" value="" x="36.83" y="45.72" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="45.72" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="45.72" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="45.72" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK14" library="optocoupler" package="DIP4" value="SFH618A-2" x="-62.23" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-62.23" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-62.23" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-62.23" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-62.23" y="17.78" size="1.778" layer="27" display="off"/>
+<element name="X14" library="con-wago-500" package="W237-102" value="" x="36.83" y="55.88" rot="R90">
+<attribute name="MF" value="" x="36.83" y="55.88" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="55.88" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="55.88" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="55.88" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK15" library="optocoupler" package="DIP4" value="SFH618A-2" x="-71.12" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-71.12" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-71.12" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-71.12" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-71.12" y="17.78" size="1.778" layer="27" display="off"/>
+<element name="X15" library="con-wago-500" package="W237-102" value="" x="36.83" y="66.04" rot="R90">
+<attribute name="MF" value="" x="36.83" y="66.04" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="66.04" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="66.04" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="66.04" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK16" library="optocoupler" package="DIP4" value="SFH618A-2" x="-80.01" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-80.01" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-80.01" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-80.01" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-80.01" y="17.78" size="1.778" layer="27" display="off"/>
+<element name="X16" library="con-wago-500" package="W237-102" value="" x="36.83" y="76.2" rot="R90">
+<attribute name="MF" value="" x="36.83" y="76.2" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="76.2" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="76.2" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="76.2" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK17" library="optocoupler" package="DIP4" value="SFH618A-2" x="-17.78" y="30.48">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-17.78" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-17.78" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-17.78" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-17.78" y="30.48" size="1.778" layer="27" display="off"/>
+<element name="X2" library="con-wago-500" package="W237-102" value="" x="6.35" y="66.04" rot="R270">
+<attribute name="MF" value="" x="6.35" y="66.04" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="66.04" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="66.04" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="66.04" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK2" library="optocoupler" package="DIP4" value="SFH618A-2" x="-26.67" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-26.67" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-26.67" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-26.67" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-26.67" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X3" library="con-wago-500" package="W237-102" value="" x="6.35" y="55.88" rot="R270">
+<attribute name="MF" value="" x="6.35" y="55.88" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="55.88" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="55.88" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="55.88" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK3" library="optocoupler" package="DIP4" value="SFH618A-2" x="-35.56" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-35.56" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-35.56" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-35.56" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-35.56" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X4" library="con-wago-500" package="W237-102" value="" x="6.35" y="45.72" rot="R270">
+<attribute name="MF" value="" x="6.35" y="45.72" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="45.72" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="45.72" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="45.72" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK4" library="optocoupler" package="DIP4" value="SFH618A-2" x="-44.45" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-44.45" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-44.45" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-44.45" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-44.45" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X5" library="con-wago-500" package="W237-102" value="" x="6.35" y="35.56" rot="R270">
+<attribute name="MF" value="" x="6.35" y="35.56" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="35.56" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="35.56" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="35.56" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK5" library="optocoupler" package="DIP4" value="SFH618A-2" x="-53.34" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-53.34" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-53.34" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-53.34" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-53.34" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X6" library="con-wago-500" package="W237-102" value="" x="6.35" y="25.4" rot="R270">
+<attribute name="MF" value="" x="6.35" y="25.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="25.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="25.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="25.4" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK6" library="optocoupler" package="DIP4" value="SFH618A-2" x="-62.23" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-62.23" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-62.23" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-62.23" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-62.23" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X7" library="con-wago-500" package="W237-102" value="" x="6.35" y="15.24" rot="R270">
+<attribute name="MF" value="" x="6.35" y="15.24" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="15.24" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="15.24" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="15.24" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK7" library="optocoupler" package="DIP4" value="SFH618A-2" x="-71.12" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-71.12" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-71.12" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-71.12" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-71.12" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X8" library="con-wago-500" package="W237-102" value="" x="6.35" y="5.08" rot="R270">
+<attribute name="MF" value="" x="6.35" y="5.08" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="237-102" x="6.35" y="5.08" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="5.08" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="6.35" y="5.08" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="OK8" library="optocoupler" package="DIP4" value="SFH618A-2" x="-80.01" y="5.08">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-80.01" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-80.01" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-80.01" y="5.08" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-80.01" y="5.08" size="1.778" layer="27" display="off"/>
+<element name="X9" library="con-wago-500" package="W237-102" value="" x="36.83" y="5.08" rot="R90">
+<attribute name="MF" value="" x="36.83" y="5.08" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="237-102" x="36.83" y="5.08" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_NEWARK" value="70K9898" x="36.83" y="5.08" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="OC_FARNELL" value="unknown" x="36.83" y="5.08" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="OK9" library="optocoupler" package="DIP4" value="SFH618A-2" x="-17.78" y="17.78">
-<attribute name="MF" value="VISHAY/TELEFUNKEN" x="-17.78" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="SFH618A-2" x="-17.78" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="21H7744" x="-17.78" y="17.78" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="6424855" x="-17.78" y="17.78" size="1.778" layer="27" display="off"/>
-</element>
-<element name="R1" library="resistor" package="M0805" value="10k" x="12.7" y="77.47"/>
-<element name="R10" library="resistor" package="M0805" value="" x="-67.31" y="64.77"/>
-<element name="R11" library="resistor" package="M0805" value="" x="-72.39" y="64.77"/>
-<element name="R12" library="resistor" package="M0805" value="" x="-77.47" y="64.77"/>
-<element name="R13" library="resistor" package="M0805" value="" x="-15.24" y="71.12"/>
-<element name="R14" library="resistor" package="M0805" value="" x="-20.32" y="71.12"/>
-<element name="R15" library="resistor" package="M0805" value="" x="-25.4" y="71.12"/>
-<element name="R16" library="resistor" package="M0805" value="" x="-30.48" y="71.12"/>
-<element name="R17" library="resistor" package="M0805" value="" x="-35.56" y="71.12"/>
-<element name="R18" library="resistor" package="M0805" value="" x="-40.64" y="71.12"/>
-<element name="R19" library="resistor" package="M0805" value="" x="-45.72" y="71.12"/>
-<element name="R2" library="resistor" package="M0805" value="" x="-55.88" y="76.2"/>
-<element name="R20" library="resistor" package="M0805" value="" x="-50.8" y="71.12"/>
-<element name="R21" library="resistor" package="M0805" value="" x="-55.88" y="71.12"/>
-<element name="R22" library="resistor" package="M0805" value="" x="-60.96" y="71.12"/>
-<element name="R23" library="resistor" package="M0805" value="" x="-66.04" y="71.12"/>
-<element name="R24" library="resistor" package="M0805" value="" x="-71.12" y="71.12"/>
-<element name="R25" library="resistor" package="M0805" value="" x="-76.2" y="71.12"/>
-<element name="R26" library="resistor" package="M0805" value="" x="-81.28" y="71.12"/>
-<element name="R27" library="resistor" package="M0805" value="" x="-15.24" y="76.2"/>
-<element name="R28" library="resistor" package="M0805" value="" x="-20.32" y="76.2"/>
-<element name="R29" library="resistor" package="M0805" value="" x="-25.4" y="76.2"/>
-<element name="R3" library="resistor" package="M0805" value="" x="-60.96" y="76.2"/>
-<element name="R30" library="resistor" package="M0805" value="" x="-30.48" y="76.2"/>
-<element name="R31" library="resistor" package="M0805" value="" x="-35.56" y="76.2"/>
-<element name="R32" library="resistor" package="M0805" value="" x="-40.64" y="76.2"/>
-<element name="R33" library="resistor" package="M0805" value="" x="-45.72" y="76.2"/>
-<element name="R34" library="resistor" package="M0805" value="" x="-50.8" y="76.2"/>
-<element name="R4" library="resistor" package="M0805" value="" x="-66.04" y="76.2"/>
-<element name="R5" library="resistor" package="M0805" value="" x="-71.12" y="76.2"/>
-<element name="R6" library="resistor" package="M0805" value="" x="-76.2" y="76.2"/>
-<element name="R7" library="resistor" package="M0805" value="" x="-81.28" y="76.2"/>
-<element name="R8" library="resistor" package="M0805" value="" x="-15.24" y="81.28"/>
-<element name="R9" library="resistor" package="M0805" value="" x="-20.32" y="81.28"/>
-<element name="X1" library="con-wago-500" package="W237-102" value="" x="6.35" y="73.66" rot="R270">
-<attribute name="MF" value="" x="6.35" y="73.66" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="237-102" x="6.35" y="73.66" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="6.35" y="73.66" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="6.35" y="73.66" size="1.778" layer="27" rot="R270" display="off"/>
-</element>
-<element name="X10" library="con-wago-500" package="W237-102" value="" x="-48.26" y="43.18">
-<attribute name="MF" value="" x="-48.26" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-48.26" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-48.26" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-48.26" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X11" library="con-wago-500" package="W237-102" value="" x="-58.42" y="43.18">
-<attribute name="MF" value="" x="-58.42" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-58.42" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-58.42" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-58.42" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X12" library="con-wago-500" package="W237-102" value="" x="-68.58" y="43.18">
-<attribute name="MF" value="" x="-68.58" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-68.58" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-68.58" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-68.58" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X13" library="con-wago-500" package="W237-102" value="" x="-78.74" y="43.18">
-<attribute name="MF" value="" x="-78.74" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-78.74" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-78.74" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-78.74" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X14" library="con-wago-500" package="W237-102" value="" x="-17.78" y="53.34">
-<attribute name="MF" value="" x="-17.78" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-17.78" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-17.78" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-17.78" y="53.34" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X15" library="con-wago-500" package="W237-102" value="" x="-27.94" y="53.34">
-<attribute name="MF" value="" x="-27.94" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-27.94" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-27.94" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-27.94" y="53.34" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X16" library="con-wago-500" package="W237-102" value="" x="-38.1" y="53.34">
-<attribute name="MF" value="" x="-38.1" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-38.1" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-38.1" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-38.1" y="53.34" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X17" library="con-wago-500" package="W237-102" value="" x="-48.26" y="53.34">
-<attribute name="MF" value="" x="-48.26" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-48.26" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-48.26" y="53.34" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-48.26" y="53.34" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X2" library="con-wago-500" package="W237-102" value="" x="-38.1" y="30.48">
-<attribute name="MF" value="" x="-38.1" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-38.1" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-38.1" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-38.1" y="30.48" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X3" library="con-wago-500" package="W237-102" value="" x="-48.26" y="30.48">
-<attribute name="MF" value="" x="-48.26" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-48.26" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-48.26" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-48.26" y="30.48" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X4" library="con-wago-500" package="W237-102" value="" x="-58.42" y="30.48">
-<attribute name="MF" value="" x="-58.42" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-58.42" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-58.42" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-58.42" y="30.48" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X5" library="con-wago-500" package="W237-102" value="" x="-68.58" y="30.48">
-<attribute name="MF" value="" x="-68.58" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-68.58" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-68.58" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-68.58" y="30.48" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X6" library="con-wago-500" package="W237-102" value="" x="-78.74" y="30.48">
-<attribute name="MF" value="" x="-78.74" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-78.74" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-78.74" y="30.48" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-78.74" y="30.48" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X7" library="con-wago-500" package="W237-102" value="" x="-17.78" y="43.18">
-<attribute name="MF" value="" x="-17.78" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-17.78" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-17.78" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-17.78" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X8" library="con-wago-500" package="W237-102" value="" x="-27.94" y="43.18">
-<attribute name="MF" value="" x="-27.94" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-27.94" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-27.94" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-27.94" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
-<element name="X9" library="con-wago-500" package="W237-102" value="" x="-38.1" y="43.18">
-<attribute name="MF" value="" x="-38.1" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="237-102" x="-38.1" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_NEWARK" value="70K9898" x="-38.1" y="43.18" size="1.778" layer="27" display="off"/>
-<attribute name="OC_FARNELL" value="unknown" x="-38.1" y="43.18" size="1.778" layer="27" display="off"/>
-</element>
+<element name="R5" library="resistor" package="M0805" value="" x="22.86" y="66.04"/>
 </elements>
 <signals>
 <signal name="N$1">
-<contactref element="R2" pad="2"/>
-<contactref element="OK1" pad="1"/>
-<wire x1="-19.05" y1="1.27" x2="-54.93" y2="76.2" width="0" layer="19" extent="1-1"/>
+<contactref element="R1" pad="2"/>
+<contactref element="X1" pad="1"/>
+<contactref element="JP1" pad="1"/>
 </signal>
 <signal name="N$2">
+<contactref element="R1" pad="1"/>
+<contactref element="JP3" pad="2"/>
+<contactref element="R2" pad="2"/>
 <contactref element="R3" pad="2"/>
-<contactref element="OK2" pad="1"/>
-<wire x1="-60.01" y1="76.2" x2="-27.94" y2="1.27" width="0" layer="19" extent="1-1"/>
+<contactref element="R4" pad="2"/>
 </signal>
 <signal name="N$3">
-<contactref element="R4" pad="2"/>
-<contactref element="OK3" pad="1"/>
-<wire x1="-65.09" y1="76.2" x2="-36.83" y2="1.27" width="0" layer="19" extent="1-1"/>
+<contactref element="JP3" pad="1"/>
+<contactref element="X1" pad="2"/>
+<contactref element="X2" pad="2"/>
+<contactref element="X3" pad="2"/>
+<contactref element="X4" pad="2"/>
 </signal>
 <signal name="N$4">
-<contactref element="R5" pad="2"/>
-<contactref element="OK4" pad="1"/>
-<wire x1="-70.17" y1="76.2" x2="-45.72" y2="1.27" width="0" layer="19" extent="1-1"/>
+<contactref element="X2" pad="1"/>
+<contactref element="JP1" pad="2"/>
+<contactref element="R2" pad="1"/>
 </signal>
 <signal name="N$5">
-<contactref element="R6" pad="2"/>
-<contactref element="OK11" pad="1"/>
-<wire x1="-75.25" y1="76.2" x2="-36.83" y2="13.97" width="0" layer="19" extent="1-1"/>
+<contactref element="X3" pad="1"/>
+<contactref element="JP1" pad="3"/>
+<contactref element="R3" pad="1"/>
 </signal>
 <signal name="N$6">
-<contactref element="R1" pad="2"/>
-<contactref element="OK10" pad="1"/>
-<wire x1="13.65" y1="77.47" x2="12.7" y2="73.66" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="N$7">
-<contactref element="X1" pad="1"/>
-<contactref element="R1" pad="1"/>
-<wire x1="5.08" y1="76.16" x2="11.75" y2="77.47" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="N$8">
-<contactref element="OK10" pad="4"/>
-<contactref element="JP1" pad="1"/>
-<contactref element="R9" pad="2"/>
-<wire x1="-19.37" y1="81.28" x2="20.32" y2="73.66" width="0" layer="19" extent="1-1"/>
-<wire x1="-55.88" y1="59.69" x2="-19.37" y2="81.28" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="N$9">
-<contactref element="OK10" pad="3"/>
-<contactref element="JP3" pad="1"/>
-<wire x1="-62.23" y1="66.04" x2="20.32" y2="71.12" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="N$10">
-<contactref element="JP3" pad="2"/>
-<contactref element="R9" pad="1"/>
-<wire x1="-59.69" y1="66.04" x2="-21.27" y2="81.28" width="0" layer="19" extent="1-1"/>
+<contactref element="X4" pad="1"/>
+<contactref element="R4" pad="1"/>
+<contactref element="JP1" pad="4"/>
 </signal>
 </signals>
 </board>

@@ -1,8 +1,6 @@
 package br.com.ezhome.device.program;
 
 import br.com.ezhome.device.PortConnector;
-import br.com.ezhome.device.PortManager;
-import br.com.ezhome.device.PortReaderAdapter;
 import br.com.ezhome.device.program.instruction.Coil;
 import br.com.ezhome.device.program.instruction.FallingEdge;
 import br.com.ezhome.device.program.instruction.NC;
@@ -13,6 +11,7 @@ import br.com.ezhome.device.program.instruction.RisingEdge;
 import br.com.ezhome.device.program.instruction.SetReset;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,8 +66,9 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
 
    private byte bitsPerBoolAddress, bitsPerNumericAddress;
    private String runtimeId, versionId;
-   private ByteArrayBuilder programBytes;
-   private ArrayList<ProgramSeries> series;
+   private final ByteArrayBuilder programBytes;
+   private final ArrayList<ProgramSeries> series;
+   private final HashMap<Integer, ProgramAddress> addresses;
 
    public ProgramBuilder(byte bitsPerBoolAddress, byte bitsPerNumericAddress, String runtimeId, String versionId) {
       this.bitsPerBoolAddress = bitsPerBoolAddress;
@@ -77,6 +77,7 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
       this.versionId = versionId;
       this.programBytes = new ByteArrayBuilder();
       this.series = new ArrayList<>();
+      this.addresses = new HashMap<>();
    }
 
    public String getRuntimeId() {
@@ -184,7 +185,6 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
    }
 
    public void printJSONArray(JSONArray json) {
-      System.out.println("Array");
       for (int i = 0; i < json.length(); i++) {
          Object value = json.get(i);
          if (value instanceof JSONObject) {
@@ -202,26 +202,26 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          if (json.get("NO") instanceof Boolean) {
             return new NO(this, json.getBoolean("NO"));
          } else {
-            return new NO(this, json.getInt("NO"));
+            return new NO(this, new ProgramAddress(json.getInt("NO")));
          }
       } else if (json.has("NC")) {
          if (json.get("NC") instanceof Boolean) {
             return new NC(this, json.getBoolean("NC"));
          } else {
-            return new NC(this, json.getInt("NC"));
+            return new NC(this, new ProgramAddress(json.getInt("NC")));
          }
       } else if (json.has("RisingEdge")) {
-         return new RisingEdge(this, json.getInt("RisingEdge"));
+         return new RisingEdge(this, new ProgramAddress(json.getInt("RisingEdge")));
       } else if (json.has("FallingEdge")) {
-         return new FallingEdge(this, json.getInt("FallingEdge"));
+         return new FallingEdge(this, new ProgramAddress(json.getInt("FallingEdge")));
       } else if (json.has("SetReset")) {
          if (json.getJSONObject("SetReset").get("reset") instanceof Boolean) {
-            return new SetReset(this, json.getJSONObject("SetReset").getInt("address"), json.getJSONObject("SetReset").getBoolean("reset"));
+            return new SetReset(this, new ProgramAddress(json.getJSONObject("SetReset").getInt("address")), json.getJSONObject("SetReset").getBoolean("reset"));
          } else {
-            return new SetReset(this, json.getJSONObject("SetReset").getInt("address"), json.getJSONObject("SetReset").getInt("reset"));
+            return new SetReset(this, new ProgramAddress(json.getJSONObject("SetReset").getInt("address")), new ProgramAddress(json.getJSONObject("SetReset").getInt("reset")));
          }
       } else if (json.has("Coil")) {
-         return new Coil(this, json.getInt("Coil"));
+         return new Coil(this, new ProgramAddress(json.getInt("Coil")));
       } else if (json.has("Parallel")) {
          ParallelSeries parallel = new ParallelSeries(this);
          loadJSONSeries(json.getJSONArray("Parallel"), parallel);
@@ -256,102 +256,111 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
    }
 
    public void loadJSON(JSONObject json) throws Exception {
-
       loadJSON(json, this);
+   }
+   
+   public ProgramAddress getFreeAddress() {
+      int i = 100;
+      while(true) {
+         if(!addresses.containsKey(i)) {
+            return new ProgramAddress(i);
+         }
+         i++;
+      }
    }
 
    public static void main(String[] args) throws Exception {
 
-      JSONObject obj2 = new JSONObject("{ \n"
-              + "   \"program\": [ \n"
-              + "      { \"serie\": [\n"
-              + "         { \"NC\": 5 },\n"
-              + "         { \"Parallel\": [ \n"
-              + "                        { \"serie\": [ { \"NO\": 4 } , { \"NC\": 8 }] },\n"
-              + "                        { \"serie\": [ { \"NO\": 6 } , { \"NC\": 7 }] }\n"
-              + "                       ] },\n"
-              + "         { \"Coil\": 3 }\n"
-              + "      ] },\n"
-              + "      { \"serie\": [\n"
-              + "         { \"NO\": 5 },\n"
-              + "         { \"Parallel\": [ \n"
-              + "                        { \"serie\": [ { \"NO\": 4 } , { \"NC\": 8 }] },\n"
-              + "                        { \"serie\": [ { \"NO\": 6 } , { \"NC\": 7 }] }\n"
-              + "                       ] },\n"
-              + "         { \"Coil\": 3 }\n"
-              + "      ] }\n"
-              + "   ] }");
-
-      JSONObject obj = new JSONObject("{ \"program\": \n"
-              + "   [ { \"serie\": [ \n"
-              + "        { \"Parallel\": [ \n"
-              + "           { \"serie\": [ { \"NO\": 9 } ] }, \n"
-              + "           { \"serie\": [ { \"NC\": 50 } ] } \n"
-              + "        ] } , \n"
-              + "        { \"Parallel\": [ \n"
-              + "           { \"serie\": [ { \"NC\": 9 } ] }, \n"
-              + "           { \"serie\": [ { \"NO\": 50 } ] } \n"
-              + "        ] }, \n"
-              + "        { \"Coil\": 4 } \n"
-              + "     ] } \n"
-              + "   ] }");
-
-      ProgramBuilder builder = new ProgramBuilder((byte) 0x6, (byte) 0x6, "0987654321123456", "1234567890098765");
-      builder.loadJSON(obj);
-
-//      if (true) return;
-      PortConnector connector = PortManager.getInstance().connect("/dev/ttyACM0");
-      connector.addReaderListener(new PortReaderAdapter() {
-
-         @Override
-         public void lineReceived(String line) {
-            System.out.println(line);
-         }
-      });
-      ProgramSeries serie = builder.createSerie();
-      serie.add(new NC(builder, 48));
-      serie.add(new Coil(builder, 1)); // Porta 5 - Out
-      ProgramSeries serie2 = builder.createSerie();
-      serie2.add(new NC(builder, 49));
-      serie2.add(new Coil(builder, 2)); // Porta 5 - Out
-      ProgramSeries serie3 = builder.createSerie();
-      serie3.add(new NC(builder, 50));
-      serie3.add(new Coil(builder, 3)); // Porta 5 - Out
-//      ProgramSeries serie4 = builder.createSerie();
-//      serie4.add(new NC(builder, 51));
-//      serie4.add(new Coil(builder, 4)); // Porta 5 - Out
-
-      ProgramSeries serie5 = builder.createSerie();
-//      serie5.add(new NC(builder, 9));
-
-      ParallelSeries parallel = new ParallelSeries(builder);
-      serie5.add(parallel);
+//      JSONObject obj2 = new JSONObject("{ \n"
+//              + "   \"program\": [ \n"
+//              + "      { \"serie\": [\n"
+//              + "         { \"NC\": 5 },\n"
+//              + "         { \"Parallel\": [ \n"
+//              + "                        { \"serie\": [ { \"NO\": 4 } , { \"NC\": 8 }] },\n"
+//              + "                        { \"serie\": [ { \"NO\": 6 } , { \"NC\": 7 }] }\n"
+//              + "                       ] },\n"
+//              + "         { \"Coil\": 3 }\n"
+//              + "      ] },\n"
+//              + "      { \"serie\": [\n"
+//              + "         { \"NO\": 5 },\n"
+//              + "         { \"Parallel\": [ \n"
+//              + "                        { \"serie\": [ { \"NO\": 4 } , { \"NC\": 8 }] },\n"
+//              + "                        { \"serie\": [ { \"NO\": 6 } , { \"NC\": 7 }] }\n"
+//              + "                       ] },\n"
+//              + "         { \"Coil\": 3 }\n"
+//              + "      ] }\n"
+//              + "   ] }");
 //
-      ProgramSeries s1 = parallel.createSerie();
-      s1.add(new NO(builder, 9));
-      ProgramSeries s2 = parallel.createSerie();
-      s2.add(new NC(builder, 50));
-
-      ParallelSeries parallel2 = new ParallelSeries(builder);
-      serie5.add(parallel2);
+//      JSONObject obj = new JSONObject("{ \"program\": \n"
+//              + "   [ { \"serie\": [ \n"
+//              + "        { \"Parallel\": [ \n"
+//              + "           { \"serie\": [ { \"NO\": 9 } ] }, \n"
+//              + "           { \"serie\": [ { \"NC\": 50 } ] } \n"
+//              + "        ] } , \n"
+//              + "        { \"Parallel\": [ \n"
+//              + "           { \"serie\": [ { \"NC\": 9 } ] }, \n"
+//              + "           { \"serie\": [ { \"NO\": 50 } ] } \n"
+//              + "        ] }, \n"
+//              + "        { \"Coil\": 4 } \n"
+//              + "     ] } \n"
+//              + "   ] }");
 //
-      ProgramSeries s12 = parallel2.createSerie();
-      s12.add(new NC(builder, 9));
-      ProgramSeries s22 = parallel2.createSerie();
-      s22.add(new NO(builder, 50));
-      serie5.add(new Coil(builder, 4)); // Porta 5 - Out
-
-//      serie.add(new NC(builder, 5)); // Porta 7 - In
-//      serie.add(new NO(builder, 4)); // Porta 6 - In
-//      serie.add(new Coil(builder, 3)); // Porta 5 - Out
-//      serie.add(new NO(builder, 5)); // Porta 7 - In
-//      serie.add(new RisingEdge(builder, 20));
-//      serie.add(new SetReset(builder, 3, 3));
-      builder.sendProgram(connector);
-      connector.sendCommand("config-output 3");
-      connector.sendCommand("config-output 4");
-      connector.sendCommand("config-output 5");
-      connector.sendCommand("config-output 6");
+//      ProgramBuilder builder = new ProgramBuilder((byte) 0x6, (byte) 0x6, "0987654321123456", "1234567890098765");
+//      builder.loadJSON(obj);
+//
+////      if (true) return;
+//      PortConnector connector = PortManager.getInstance().connect("/dev/ttyACM0");
+//      connector.addReaderListener(new PortReaderAdapter() {
+//
+//         @Override
+//         public void lineReceived(String line) {
+//            System.out.println(line);
+//         }
+//      });
+//      ProgramSeries serie = builder.createSerie();
+//      serie.add(new NC(builder, 48));
+//      serie.add(new Coil(builder, 1)); // Porta 5 - Out
+//      ProgramSeries serie2 = builder.createSerie();
+//      serie2.add(new NC(builder, 49));
+//      serie2.add(new Coil(builder, 2)); // Porta 5 - Out
+//      ProgramSeries serie3 = builder.createSerie();
+//      serie3.add(new NC(builder, 50));
+//      serie3.add(new Coil(builder, 3)); // Porta 5 - Out
+////      ProgramSeries serie4 = builder.createSerie();
+////      serie4.add(new NC(builder, 51));
+////      serie4.add(new Coil(builder, 4)); // Porta 5 - Out
+//
+//      ProgramSeries serie5 = builder.createSerie();
+////      serie5.add(new NC(builder, 9));
+//
+//      ParallelSeries parallel = new ParallelSeries(builder);
+//      serie5.add(parallel);
+////
+//      ProgramSeries s1 = parallel.createSerie();
+//      s1.add(new NO(builder, 9));
+//      ProgramSeries s2 = parallel.createSerie();
+//      s2.add(new NC(builder, 50));
+//
+//      ParallelSeries parallel2 = new ParallelSeries(builder);
+//      serie5.add(parallel2);
+////
+//      ProgramSeries s12 = parallel2.createSerie();
+//      s12.add(new NC(builder, 9));
+//      ProgramSeries s22 = parallel2.createSerie();
+//      s22.add(new NO(builder, 50));
+//      serie5.add(new Coil(builder, 4)); // Porta 5 - Out
+//
+////      serie.add(new NC(builder, 5)); // Porta 7 - In
+////      serie.add(new NO(builder, 4)); // Porta 6 - In
+////      serie.add(new Coil(builder, 3)); // Porta 5 - Out
+////      serie.add(new NO(builder, 5)); // Porta 7 - In
+////      serie.add(new RisingEdge(builder, 20));
+////      serie.add(new SetReset(builder, 3, 3));
+//      builder.sendProgram(connector);
+//      connector.sendCommand("config-output 3");
+//      connector.sendCommand("config-output 4");
+//      connector.sendCommand("config-output 5");
+//      connector.sendCommand("config-output 6");
 
    }
 

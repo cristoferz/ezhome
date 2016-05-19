@@ -17,6 +17,11 @@ Engine engine = Engine(DEVICE_CONFIG_EEPROM_BYTES, &program, &memory);
 SerialPort serialPort = SerialPort(&io, &memory, &deviceConfig, &program, &engine);
 StatusLED statusLED = StatusLED(STATUS_LED_PIN, &engine);
 
+
+void timerISR() {
+  statusLED.timerISR(); // called 490 times per second by Timer1 (default PWM frequency)
+}
+
 void setup() {        
   deviceConfig.readFromEeprom(); 
   if(program.readFromEeprom()) {
@@ -26,12 +31,9 @@ void setup() {
   io.configureIO();
   statusLED.init();
   serialPort.setupSerialPort();
-  Timer1.attachInterrupt(timerISR);
+  Timer1.attachInterrupt(timerISR); 
 }
 
-void timerISR() {
-  statusLED.timerISR(); // called 490 times per second by Timer1 (default PWM frequency)
-}
 
 void loop() {  
   io.scanInputs();

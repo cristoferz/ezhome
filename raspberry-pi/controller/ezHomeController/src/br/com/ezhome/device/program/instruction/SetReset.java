@@ -1,6 +1,7 @@
 package br.com.ezhome.device.program.instruction;
 
 import br.com.ezhome.device.program.ByteArrayBuilder;
+import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
 
@@ -11,17 +12,17 @@ import br.com.ezhome.device.program.ProgramSeriesBuilder;
  */
 public class SetReset extends ProgramInstruction {
 
-   private int outputAddress, valueAddress;
+   private ProgramAddress outputAddress, valueAddress;
    private boolean constant, constantValue;
 
-   public SetReset(ProgramBuilder builder, int outputAddress, boolean constantValue) {
+   public SetReset(ProgramBuilder builder, ProgramAddress outputAddress, boolean constantValue) {
       super(builder);
       this.outputAddress = outputAddress;
       this.constant = true;
       this.constantValue = constantValue;
    }
 
-   public SetReset(ProgramBuilder builder, int outputAddress, int valueAddress) {
+   public SetReset(ProgramBuilder builder, ProgramAddress outputAddress, ProgramAddress valueAddress) {
       super(builder);
       this.outputAddress = outputAddress;
       this.constant = false;
@@ -55,9 +56,9 @@ public class SetReset extends ProgramInstruction {
          builder.getArrayBuilder().appendBit(constantValue);
       } else {
          builder.getArrayBuilder().appendBit(true);
-         builder.getArrayBuilder().append(valueAddress, getBuilder().getBitsPerBoolAddress(), false, true);
+         builder.getArrayBuilder().append(valueAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
       }
-      builder.getArrayBuilder().append(outputAddress, getBuilder().getBitsPerBoolAddress(), false, true);
+      builder.getArrayBuilder().append(outputAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
    }
 
 }

@@ -42,7 +42,7 @@ curl http://192.168.1.29:8080/device/program -X POST --data 'device=/dev/ttyACM0
            ] },
            { "serie": [
               { "NO": 5 },
-              { "RisingEdge": 106 }
+              { "FallingEdge": 106 }
            ] }
         ] },
         { "SetReset": { "address": 2, "reset": 2} }

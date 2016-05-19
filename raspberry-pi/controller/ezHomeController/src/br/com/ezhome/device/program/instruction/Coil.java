@@ -1,6 +1,7 @@
 package br.com.ezhome.device.program.instruction;
 
 import br.com.ezhome.device.program.ByteArrayBuilder;
+import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
 
@@ -10,9 +11,9 @@ import br.com.ezhome.device.program.ProgramSeriesBuilder;
  */
 public class Coil extends ProgramInstruction {
 
-   private int address;
+   private ProgramAddress address;
 
-   public Coil(ProgramBuilder builder, int address) {
+   public Coil(ProgramBuilder builder, ProgramAddress address) {
       super(builder);
       this.address = address;
    }
@@ -35,6 +36,6 @@ public class Coil extends ProgramInstruction {
    @Override
    public void appendBytes(ProgramSeriesBuilder builder) {
       builder.getArrayBuilder().append(getInstructionCode(), getInstructionSize(), false, true);
-      builder.getArrayBuilder().append(address, getBuilder().getBitsPerBoolAddress(), false, true);
+      builder.getArrayBuilder().append(address.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
    }
 }

@@ -1,5 +1,6 @@
 package br.com.ezhome.device.program.instruction;
 
+import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
 
@@ -9,9 +10,9 @@ import br.com.ezhome.device.program.ProgramSeriesBuilder;
  */
 public class RisingEdge extends ProgramInstruction {
 
-   private final int address;
+   private final ProgramAddress address;
 
-   public RisingEdge(ProgramBuilder builder, int address) {
+   public RisingEdge(ProgramBuilder builder, ProgramAddress address) {
       super(builder);
       this.address = address;
    }
@@ -34,7 +35,7 @@ public class RisingEdge extends ProgramInstruction {
    @Override
    public void appendBytes(ProgramSeriesBuilder builder) {
       builder.getArrayBuilder().append(getInstructionCode(), getInstructionSize(), false, true);
-      builder.getArrayBuilder().append(address, getBuilder().getBitsPerBoolAddress(), false, true);
+      builder.getArrayBuilder().append(address.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
    }
 
 }
