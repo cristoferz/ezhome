@@ -172,6 +172,10 @@ byte Engine::processNextInstruction() { // returns instruction
     case 0x7C: // Math Choose #
       mathChooseNumber();
       return instruction;
+    case 0x7D:
+      // Monitor/Memory
+      break;
+      
   }
   
   // if we get this far, then the only valid possibipality left is an end-of-program instruction
@@ -220,7 +224,27 @@ void Engine::setError(byte errorCode) {
 void Engine::coil() {
   int address = getBooleanAddress();
   boolean newValue = _rungCondition && !_preScan;
+  byte monitor = getNextBit();
+  boolean oldValue = _memory->readBoolean(address);
   _memory->writeBoolean(address, newValue);
+  if (monitor == 1) {
+    if (oldValue != newValue) {
+      Serial.print(F("AS="));
+      Serial.print(address);
+      if (newValue) {
+        Serial.println(F(":1"));
+      } else {
+        Serial.println(F(":0"));
+      }
+    }
+  }
+  byte eeprom = getNextBit();
+  if (eeprom == 1) {
+    int eepromAddress = loadBitsIntoInstruction(0, 8);
+    if (oldValue != newValue) {
+      // TODO Gravar na EEPROM no endereço
+    }
+  }
 }
 
 void Engine::contactNO() {

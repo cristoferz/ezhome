@@ -11,6 +11,9 @@ SerialPort::SerialPort(IO* io, Memory* memory, DeviceConfig* deviceConfig, Progr
 
 void SerialPort::setupSerialPort() {
   Serial.begin(115200);
+  // delay for correct problem reading
+  delay(500);
+  _program->printRuntimeId();
 }
 
 void SerialPort::readAndWrite() {
@@ -68,7 +71,8 @@ void SerialPort::processCharacter(char c) {
 
 void SerialPort::processLine(String &line) {
   if(line.equals("information")) {
-    Serial.println(F("SoapBox Snap Arduino Runtime"));
+    Serial.println(F("ezHome="));
+    Serial.println(FIRMWARE_VERSION);    
     Serial.print(F("Protocol Version="));
     Serial.println(PROTOCOL_VERSION);
     Serial.print(F("Booleans="));

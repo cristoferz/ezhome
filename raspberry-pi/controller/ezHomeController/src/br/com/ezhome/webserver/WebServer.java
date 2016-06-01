@@ -1,13 +1,14 @@
 package br.com.ezhome.webserver;
 
+import br.com.ezhome.Controller;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.InetSocketAddress;
+import java.util.logging.Level;
 
 /**
  *
@@ -21,7 +22,7 @@ public class WebServer {
 
    public static WebServer getInstance() {
       if (instance == null) {
-         throw new UnsupportedOperationException("Webserver ainda não foi inicializado");
+         throw new UnsupportedOperationException("Webserver still not initialized");
       }
       return instance;
    }
@@ -29,7 +30,7 @@ public class WebServer {
    public static void create(int port) throws IOException {
       if (instance == null) {
          instance = new WebServer(port);
-         System.out.println("Criado na porta " + port);
+         Controller.getLogger().log(Level.INFO, "Webserver started on port {0}", port);
       }
    }
 
@@ -39,7 +40,8 @@ public class WebServer {
 
    private WebServer(int port) throws IOException {
       httpServer = HttpServer.create(new InetSocketAddress(port), 0);
-      httpServer.setExecutor(null);
+      //httpServer.setExecutor(null);
+      httpServer.createContext("/", new HttpHandlerDefault());
       httpServer.createContext("/status", new HttpHandler() {
 
          @Override

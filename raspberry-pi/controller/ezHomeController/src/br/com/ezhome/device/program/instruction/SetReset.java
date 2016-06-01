@@ -4,6 +4,7 @@ import br.com.ezhome.device.program.ByteArrayBuilder;
 import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
+import org.json.JSONObject;
 
 /**
  * Operação de Set/Reset para um endereço
@@ -59,6 +60,20 @@ public class SetReset extends ProgramInstruction {
          builder.getArrayBuilder().append(valueAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
       }
       builder.getArrayBuilder().append(outputAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
+   }
+
+   @Override
+   public JSONObject toJSON() {
+      JSONObject result = new JSONObject();
+      JSONObject data = new JSONObject();
+      result.put("SetReset", data);
+      data.put("address", outputAddress.getAddress());
+      if(isConstant()) {
+         data.put("reset", constantValue);
+      } else {
+         data.put("reset", valueAddress.getAddress());
+      }
+      return result;
    }
 
 }

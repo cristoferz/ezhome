@@ -11,7 +11,8 @@ void IO::configureIO() {
       pinMode(pin, OUTPUT);
     }
     else {
-      pinMode(pin, INPUT);
+      // Enable internal pull up resistor
+      pinMode(pin, INPUT_PULLUP);
     }
   }
 }
@@ -66,12 +67,25 @@ void IO::scanInputs() {
   for(int pin = MIN_PIN_NUMBER; pin <= MAX_PIN_NUMBER; pin++) {
     if(pin != STATUS_LED_PIN && _deviceConfig->isInput(pin)) {
       int address = _deviceConfig->getAddress(pin);
+      boolean oldValue = _memory->readBoolean(address);
       if(digitalRead(pin) == HIGH) {
         _memory->writeBoolean(address, true);
+        if (!oldValue) {// && address != 2 && address != 40 && address != 41 && address != 42) {
+          Serial.print(F("IS=")); 
+          Serial.print(address);
+          Serial.println(F(":1"));
+        }
       }
       else {
         _memory->writeBoolean(address, false);
+        if (oldValue){// && address != 2 && address != 40 && address != 41 && address != 42) {
+          Serial.print(F("IS="));
+          Serial.print(address);
+          Serial.println(F(":0"));
+        }
+        
       }
+      
     }
   }
   for(int analogPin = MIN_ANALOG_INPUT; analogPin <= MAX_ANALOG_INPUT; analogPin++) {
@@ -90,11 +104,22 @@ void IO::scanOutputs() {
       if(_deviceConfig->isOutput(pin)) {
         int address = _deviceConfig->getAddress(pin);
         boolean value = _memory->readBoolean(address);
+        boolean oldValue = (digitalRead(pin) == HIGH);
         if(value) {
           digitalWrite(pin, HIGH);
+          if (!oldValue) {
+            Serial.print(F("OS="));
+            Serial.print(address);
+            Serial.println(F(":1"));
+          }
         }
         else {
           digitalWrite(pin, LOW);
+          if (oldValue) {
+            Serial.print(F("OS="));
+            Serial.print(address);
+            Serial.println(F(":0"));
+          }
         }
       }
       else if(_deviceConfig->isPwm(pin)) {

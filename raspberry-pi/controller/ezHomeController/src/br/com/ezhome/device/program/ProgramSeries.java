@@ -2,6 +2,8 @@ package br.com.ezhome.device.program;
 
 import br.com.ezhome.device.program.instruction.ProgramInstruction;
 import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -22,6 +24,16 @@ public class ProgramSeries extends ArrayList<ProgramInstruction> {
          result += get(i).getDataSize();
       }
       result += ProgramBuilder.INSTRUCTION_SERIES_END_SIZE;
+      return result;
+   }
+   
+   public JSONObject toJSON() {
+      JSONObject result = new JSONObject();
+      JSONArray instructions = new JSONArray();
+      result.put("serie", instructions);
+      for (int i = 0; i < size(); i++) {
+         instructions.put(get(i).toJSON());
+      }
       return result;
    }
 }

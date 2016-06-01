@@ -5,6 +5,8 @@ import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeries;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
 import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -61,6 +63,17 @@ public class ParallelSeries extends ProgramInstruction implements ProgramSeriesB
    @Override
    public ByteArrayBuilder getArrayBuilder() {
       return getBuilder().getArrayBuilder();
+   }
+
+   @Override
+   public JSONObject toJSON() {
+      JSONObject result = new JSONObject();
+      JSONArray seriesArray = new JSONArray();
+      result.put("Parallel", seriesArray);
+      for (int i = 0; i < series.size(); i++) {
+         seriesArray.put(series.get(i).get(i).toJSON());
+      }
+      return result;
    }
    
 }

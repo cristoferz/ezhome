@@ -13,6 +13,7 @@ const char LINE_FEED = 10;
 const char BACKSPACE = 8;
 const char NULL_CHAR = 0;
 
+const char FIRMWARE_VERSION[] = "0.1"; // specifies the firmware version, for compatibilty checking
 const char PROTOCOL_VERSION[] = "1.0"; // specifies the serial port protocol version, for compatibilty checking
 const char DEVICE_NAME[] = "Arduino";
 

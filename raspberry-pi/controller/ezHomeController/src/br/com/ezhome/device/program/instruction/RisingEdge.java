@@ -3,6 +3,7 @@ package br.com.ezhome.device.program.instruction;
 import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
+import org.json.JSONObject;
 
 /**
  *
@@ -36,6 +37,13 @@ public class RisingEdge extends ProgramInstruction {
    public void appendBytes(ProgramSeriesBuilder builder) {
       builder.getArrayBuilder().append(getInstructionCode(), getInstructionSize(), false, true);
       builder.getArrayBuilder().append(address.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
+   }
+
+   @Override
+   public JSONObject toJSON() {
+      JSONObject result = new JSONObject();
+      result.put("RisingEdge", address.getAddress());
+      return result;
    }
 
 }

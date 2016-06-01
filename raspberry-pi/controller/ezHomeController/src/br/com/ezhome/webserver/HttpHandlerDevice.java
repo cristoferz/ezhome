@@ -1,5 +1,6 @@
 package br.com.ezhome.webserver;
 
+import br.com.ezhome.device.FirmwareUploader;
 import br.com.ezhome.device.PortConnector;
 import br.com.ezhome.device.PortManager;
 import br.com.ezhome.device.program.ProgramBuilder;
@@ -20,59 +21,16 @@ import org.json.JSONObject;
  *
  * @author cristofer
  */
-public class HttpHandlerDevice implements HttpHandler {
+public class HttpHandlerDevice extends HttpHandlerAbstract{
 
-   /**
-    * Converte a query string em um Map de parametros
-    *
-    * @param query
-    * @return
-    */
-   public HashMap<String, String> queryToMap(String query) {
-      HashMap<String, String> result = new HashMap<>();
-      if (query != null) {
-         String[] parameters = query.split("&");
-         if (parameters != null) {
-            for (String parameter : query.split("&")) {
-               String pair[] = parameter.split("=");
-               if (pair.length == 1) {
-                  result.put(pair[0], "");
-               } else {
-                  result.put(pair[0], pair[1]);
-               }
-            }
-         }
-      }
-      return result;
-   }
-   
-   public HashMap<String, String> getUrlParameters(HttpExchange exchange) {
-      return queryToMap(exchange.getRequestURI().getQuery());
-   }
-   
-   public HashMap<String, String> getPostParameters(HttpExchange exchange) throws IOException {
-      StringBuilder sb = new StringBuilder();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-      try {
-         int len;
-         char[] buf = new char[1024];
-         while((len = reader.read(buf)) != -1) {
-            sb.append(buf);
-         }
-      } finally {
-         reader.close();
-      }
-      return queryToMap(sb.toString());
-   }
-   
    @Override
    public void handle(HttpExchange exchange) throws IOException {
       OutputStream os = exchange.getResponseBody();
       try {
          String path = exchange.getRequestURI().getPath();
-         
-         
+
          if (path.equals("/device/list")) {
+            
             JSONObject json = new JSONObject();
             JSONArray devices = new JSONArray();
             ArrayList<PortConnector> connectors = PortManager.getInstance().listConnectedPorts();
@@ -81,6 +39,7 @@ public class HttpHandlerDevice implements HttpHandler {
                device.put("name", connector.getName());
                device.put("currentOwner", "self");
                device.put("connected", true);
+               device.put("runtimeId", connector.getRuntimeId());
                devices.put(device);
             }
             Enumeration<CommPortIdentifier> ports = PortManager.getInstance().listPorts();
@@ -117,7 +76,7 @@ public class HttpHandlerDevice implements HttpHandler {
             if (connector == null) {
                json.put("success", false);
                json.put("message", "Device " + urlParameters.get("device") + " is not connected.");
-               exchange.sendResponseHeaders(500, json.toString().getBytes().length);               
+               exchange.sendResponseHeaders(500, json.toString().getBytes().length);
             } else {
                connector.close();
                json.put("success", true);
@@ -132,6 +91,42 @@ public class HttpHandlerDevice implements HttpHandler {
 //            // Faz um scan de portas do arduino
 //         } else if (path.equals("/device/upload")) {
 //            
+         } else if (path.equals("/device/upload")) {
+
+            JSONObject json = new JSONObject();
+            HashMap<String, String> urlParameters = getUrlParameters(exchange);
+            // disconnect before upload
+            PortConnector connector = PortManager.getInstance().get(urlParameters.get("device"));
+            if (connector != null) {
+               connector.close();
+            }
+//            PortConnector connector = PortManager.getInstance().connect(urlParameters.get("device"));
+            FirmwareUploader uploader = new FirmwareUploader();
+            uploader.setPort(urlParameters.get("device"));
+            if (urlParameters.get("model") != null) {
+               if (urlParameters.get("model").equalsIgnoreCase("UNO")) {
+                  uploader.preloadConfig(FirmwareUploader.ARDUINO_UNO);
+               } else if (urlParameters.get("model").equalsIgnoreCase("MEGA")) {
+                  uploader.preloadConfig(FirmwareUploader.ARDUINO_MEGA);
+               } else if (urlParameters.get("model").equalsIgnoreCase("NANO")) {
+                  uploader.preloadConfig(FirmwareUploader.ARDUINO_NANO);
+               } else {
+                  throw new IllegalArgumentException("Invalid model " + urlParameters.get("model"));
+               }
+            } else {
+               throw new IllegalArgumentException("Model cannot be null");
+            }
+            FirmwareUploader.UploadResult result = uploader.upload();
+            if (result.getExitStatus() == 0) {
+               json.put("success", true);
+            } else {
+               json.put("success", false);
+               json.put("exitStatus", result.getExitStatus());
+            }
+            json.put("result", result.getOutput());
+            exchange.sendResponseHeaders(200, json.toString().getBytes().length);
+            os.write(json.toString().getBytes());
+
          } else if (path.equals("/device/send")) {
             HashMap<String, String> urlParameters = getUrlParameters(exchange);
             PortConnector connector = PortManager.getInstance().connect(urlParameters.get("device"));
@@ -146,15 +141,21 @@ public class HttpHandlerDevice implements HttpHandler {
             PortConnector connector = PortManager.getInstance().connect(postParameters.get("device"));
             String program = postParameters.get("program");
             JSONObject obj = new JSONObject(program);
-            ProgramBuilder builder = new ProgramBuilder((byte) 0x6, (byte) 0x6, "0987654321123456", "1234567890098765");
+            ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
             builder.loadJSON(obj);
             builder.sendProgram(connector);
-            
+
             JSONObject json = new JSONObject();
             json.put("success", true);
             json.put("result", "OK");
             exchange.sendResponseHeaders(200, json.toString().getBytes().length);
             os.write(json.toString().getBytes());
+         } else if (path.equals("/device/states")) {
+            HashMap<String, String> urlParameters = getUrlParameters(exchange);
+            PortConnector connector = PortManager.getInstance().connect(urlParameters.get("device"));
+            
+            exchange.sendResponseHeaders(200, connector.getPortStates().toString().getBytes().length);
+            os.write(connector.getPortStates().toString().getBytes());
          } else {
             String response = "Invalid URL: " + path;
             exchange.sendResponseHeaders(404, response.getBytes().length);

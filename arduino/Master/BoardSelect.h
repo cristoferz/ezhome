@@ -2,9 +2,9 @@
 #define BoardSelect_h
 
 // make sure exactly one of these lines is uncommented:
-#define UNO
+//#define UNO
 //#define NANO
-//#define MEGA
+#define MEGA
 
 const byte NUM_STRINGS = 0; // not implemented yet
 

@@ -2,6 +2,7 @@ package br.com.ezhome.device.program.instruction;
 
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
+import org.json.JSONObject;
 
 /**
  *
@@ -41,4 +42,6 @@ public abstract class ProgramInstruction {
     * @param builder 
     */
    public abstract void appendBytes(ProgramSeriesBuilder builder);
+   
+   public abstract JSONObject toJSON();
 }

@@ -17,6 +17,7 @@ Engine engine = Engine(DEVICE_CONFIG_EEPROM_BYTES, &program, &memory);
 SerialPort serialPort = SerialPort(&io, &memory, &deviceConfig, &program, &engine);
 StatusLED statusLED = StatusLED(STATUS_LED_PIN, &engine);
 
+int x;
 
 void timerISR() {
   statusLED.timerISR(); // called 490 times per second by Timer1 (default PWM frequency)

@@ -89,7 +89,7 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          throw new IllegalArgumentException("Runtime ID cannot be null");
       }
 
-      if (runtimeId.getBytes().length != GUID_LENGTH) {
+      if (runtimeId.getBytes().length != GUID_LENGTH * 2) {
          throw new IllegalArgumentException("Runtime ID must have 16 bytes");
       }
       this.runtimeId = runtimeId;
@@ -104,7 +104,7 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          throw new IllegalArgumentException("Version ID cannot be null");
       }
 
-      if (versionId.getBytes().length != GUID_LENGTH) {
+      if (versionId.getBytes().length != GUID_LENGTH * 2) {
          throw new IllegalArgumentException("Version ID must have 16 bytes");
       }
       this.versionId = versionId;
@@ -115,15 +115,11 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
    }
 
    public void writeProgram() {
+      calcBitsPerAddress();
       programBytes.clear();
-      // Writes runtime id
-      for (int i = 0; i < GUID_LENGTH; i++) {
-         programBytes.append(runtimeId.getBytes()[i], 8, true, true);
-      }
-      // Writes version id
-      for (int i = 0; i < GUID_LENGTH; i++) {
-         programBytes.append(versionId.getBytes()[i], 8, true, true);
-      }
+      appendGUID(runtimeId);
+      appendGUID(versionId);
+
       programBytes.append(bitsPerBoolAddress, 8, true, true);
       programBytes.append(bitsPerNumericAddress, 8, true, true);
       // Build instructions
@@ -132,6 +128,42 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
       }
       // Appends the program end
       programBytes.append(INSTRUCTION_PROGRAM_END, 8, true, true);
+   }
+
+   private void calcBitsPerAddress() {
+      Integer maxAddress = 56; // Max Address for ports
+      for (Integer address : addresses.keySet()) {
+         if (address > maxAddress) {
+            maxAddress = address;
+         }
+      }
+      byte perBool = 0;
+      for (byte i = 0; i < 255; i++) { // Looks for the best size
+         if (maxAddress < (1 << i)) {
+            perBool = i;
+            break;
+         }
+      }
+      System.out.println(maxAddress);
+      System.out.println(perBool);
+      this.bitsPerBoolAddress = perBool;
+   }
+
+   public void appendGUID(String guid) {
+      int[] indexes = new int[]{3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15};
+      for (int index : indexes) {
+         programBytes.append((byte) Integer.parseInt(runtimeId.substring(index * 2, (index * 2) + 2), 16), 8, true, true);
+      }
+   }
+
+   public JSONObject toJSON() {
+      JSONObject result = new JSONObject();
+      JSONArray seriesArray = new JSONArray();
+      result.append("program", seriesArray);
+      for (int i = 0; i < series.size(); i++) {
+         seriesArray.put(series.get(i).toJSON());
+      }
+      return result;
    }
 
    public byte getBitsPerBoolAddress() {
@@ -173,7 +205,6 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
       while (keys.hasNext()) {
          String key = keys.next();
          Object value = json.get(key);
-         System.out.println("Key: " + key + " Value: " + value);
          if (value instanceof JSONObject) {
             printJSON((JSONObject) value);
          } else if (value instanceof JSONArray) {
@@ -202,26 +233,26 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          if (json.get("NO") instanceof Boolean) {
             return new NO(this, json.getBoolean("NO"));
          } else {
-            return new NO(this, new ProgramAddress(json.getInt("NO")));
+            return new NO(this, getAddress(json.getInt("NO")));
          }
       } else if (json.has("NC")) {
          if (json.get("NC") instanceof Boolean) {
             return new NC(this, json.getBoolean("NC"));
          } else {
-            return new NC(this, new ProgramAddress(json.getInt("NC")));
+            return new NC(this, getAddress(json.getInt("NC")));
          }
       } else if (json.has("RisingEdge")) {
-         return new RisingEdge(this, new ProgramAddress(json.getInt("RisingEdge")));
+         return new RisingEdge(this, getAddress(json.getInt("RisingEdge")));
       } else if (json.has("FallingEdge")) {
-         return new FallingEdge(this, new ProgramAddress(json.getInt("FallingEdge")));
+         return new FallingEdge(this, getAddress(json.getInt("FallingEdge")));
       } else if (json.has("SetReset")) {
          if (json.getJSONObject("SetReset").get("reset") instanceof Boolean) {
-            return new SetReset(this, new ProgramAddress(json.getJSONObject("SetReset").getInt("address")), json.getJSONObject("SetReset").getBoolean("reset"));
+            return new SetReset(this, getAddress(json.getJSONObject("SetReset").getInt("address")), json.getJSONObject("SetReset").getBoolean("reset"));
          } else {
-            return new SetReset(this, new ProgramAddress(json.getJSONObject("SetReset").getInt("address")), new ProgramAddress(json.getJSONObject("SetReset").getInt("reset")));
+            return new SetReset(this, getAddress(json.getJSONObject("SetReset").getInt("address")), getAddress(json.getJSONObject("SetReset").getInt("reset")));
          }
       } else if (json.has("Coil")) {
-         return new Coil(this, new ProgramAddress(json.getInt("Coil")));
+         return new Coil(this, getAddress(json.getInt("Coil")));
       } else if (json.has("Parallel")) {
          ParallelSeries parallel = new ParallelSeries(this);
          loadJSONSeries(json.getJSONArray("Parallel"), parallel);
@@ -258,19 +289,34 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
    public void loadJSON(JSONObject json) throws Exception {
       loadJSON(json, this);
    }
-   
+
    public ProgramAddress getFreeAddress() {
-      int i = 100;
-      while(true) {
-         if(!addresses.containsKey(i)) {
-            return new ProgramAddress(i);
+      int i = 64;
+      while (true) {
+         if (!addresses.containsKey(i)) {
+            return getAddress(i);
          }
          i++;
       }
    }
 
-   public static void main(String[] args) throws Exception {
+   public ProgramAddress getAddress(int address) {
+      ProgramAddress result = new ProgramAddress(address);
+      addresses.put(address, result);
+      return result;
+   }
 
+   public static void main(String[] args) throws Exception {
+      int v = 7;
+      int result = 1;
+      //for (int i = 0; i < v; i++) {
+      result = result << v - 1;
+      //}
+      System.out.println(result);
+//      for (int i = 0; i < 16; i++) {
+//         
+//      System.out.println(Integer.toHexString((byte)Integer.parseInt("0123456789ABCDEF".substring(i, i+1), 16)));
+//      }
 //      JSONObject obj2 = new JSONObject("{ \n"
 //              + "   \"program\": [ \n"
 //              + "      { \"serie\": [\n"

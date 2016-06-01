@@ -991,6 +991,13 @@ is divided into following sections:
     </target>
     <target depends="init,-init-macrodef-copylibs,compile,-pre-pre-jar,-pre-jar,-do-jar-create-manifest,-do-jar-copy-manifest,-do-jar-set-mainclass,-do-jar-set-profile,-do-jar-set-splashscreen" if="do.mkdist" name="-do-jar-copylibs">
         <j2seproject3:copylibs manifest="${tmp.manifest.file}"/>
+	<echo level="info">Copying hex files...</echo>
+	<copy todir="src/br/com/ezhome/device/hex">
+           <fileset dir="../../../arduino/Master/">
+               <include name="**/*.hex" />
+               <exclude name="**/*bootloader*" />
+           </fileset>
+        </copy>
         <echo level="info">To run this application from the command line without Ant, try:</echo>
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <echo level="info">java -jar "${dist.jar.resolved}"</echo>

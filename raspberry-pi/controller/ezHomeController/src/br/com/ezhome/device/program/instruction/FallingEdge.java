@@ -3,13 +3,14 @@ package br.com.ezhome.device.program.instruction;
 import br.com.ezhome.device.program.ProgramAddress;
 import br.com.ezhome.device.program.ProgramBuilder;
 import br.com.ezhome.device.program.ProgramSeriesBuilder;
+import org.json.JSONObject;
 
 /**
  *
  * @author cristofer
  */
 public class FallingEdge extends ProgramInstruction {
-   
+
    private ProgramAddress address;
 
    public FallingEdge(ProgramBuilder builder, ProgramAddress address) {
@@ -29,13 +30,21 @@ public class FallingEdge extends ProgramInstruction {
 
    @Override
    public int getDataSize() {
-      return getBuilder().getBitsPerBoolAddress()+getInstructionSize();
+      return getBuilder().getBitsPerBoolAddress() + getInstructionSize();
    }
-   
+
    @Override
    public void appendBytes(ProgramSeriesBuilder builder) {
       builder.getArrayBuilder().append(getInstructionCode(), getInstructionSize(), false, true);
       builder.getArrayBuilder().append(address.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
    }
-   
+
+   @Override
+   public JSONObject toJSON() {
+      JSONObject result = new JSONObject();
+      result.put("FallingEdge", address.getAddress());
+      return result;
+
+   }
+
 }

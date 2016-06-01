@@ -1,10 +1,12 @@
 package br.com.ezhome.device;
 
+import br.com.ezhome.Controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Realiza a leitura constante das portas do Raspberry Pi
@@ -15,14 +17,20 @@ public class PortReader extends Thread {
 
    private static final String END_OF_MESSAGE = "EOM";
 
-   private PortConnector connector;
-   private InputStream in;
-   private StringBuilder stringBuilder;
-   private BufferedReader bufferedReader;
+   private final PortConnector connector;
+   private final InputStream in;
+   private final StringBuilder stringBuilder;
+   private final BufferedReader bufferedReader;
 
-   private ArrayList<PortReaderListener> listeners;
+   private final ArrayList<PortReaderListener> listeners;
 
-   public PortReader(PortConnector connector, InputStream in) {
+   /**
+    * Initializes a PortReader
+    * 
+    * @param connector
+    * @param in 
+    */
+   protected PortReader(PortConnector connector, InputStream in) {
       this.connector = connector;
       this.in = in;
       stringBuilder = new StringBuilder();
@@ -53,30 +61,56 @@ public class PortReader extends Thread {
             }
          }
       } catch (Exception ex) {
-         ex.printStackTrace();
+         Controller.getLogger().log(Level.SEVERE, "Error on PortReader thread", ex);
       }
    }
 
+   /**
+    * Closes this PortReader and all streams and buffers
+    * 
+    * @throws IOException 
+    */
    public void close() throws IOException {
-
       bufferedReader.close();
       in.close();
    }
 
+   /**
+    * Adds a readerListener to this PortReader
+    *
+    * @param listener
+    */
    public void addListener(PortReaderListener listener) {
       listeners.add(listener);
    }
 
+   /**
+    * Removes the especified listener from this PortReader
+    *
+    * @param listener
+    * @return
+    */
    public boolean removeListener(PortReaderListener listener) {
       return listeners.remove(listener);
    }
 
+   /**
+    * Fires all listeners when a line is received by this PortReader device
+    *
+    * @param line the line received
+    */
    protected void fireLineReceived(String line) {
       for (PortReaderListener listener : listeners) {
          listener.lineReceived(line);
       }
    }
 
+   /**
+    * Fires all listeners when a complete message is received by this PortReader
+    * device. A complete message is finished by a EOM (End Of Message).
+    *
+    * @param message the complete message received
+    */
    protected void fireMessageReceived(String message) {
       for (PortReaderListener listener : listeners) {
          listener.messageReceived(message);
