@@ -1,10 +1,15 @@
 package br.com.ezhome.device;
 
+import br.com.ezhome.database.DatabaseConnector;
+import br.com.ezhome.device.event.DevicePortStateEvent;
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.RXTXPort;
 import gnu.io.SerialPort;
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +19,7 @@ import org.json.JSONObject;
  *
  * @author cristofer
  */
-public class PortConnector {
+public class Device {
 
    /**
     * Default connection timeout to devices 2s
@@ -24,8 +29,14 @@ public class PortConnector {
     * Default command timeout 2s
     */
    public static final int COMMAND_TIMEOUT = 2000;
+   /**
+    * Baudrate for connections with devices
+    */
+   public static final int BAUDRATE = 115200;
 
-   private final PortManager manager;
+   public static final String BLANK_GUID = "0000000000000000";
+
+   private final DeviceManager manager;
    private PortReader reader;
    private PortWriter writer;
 
@@ -36,6 +47,10 @@ public class PortConnector {
 
    private String runtimeId, versionId;
 
+   private RegisteredDevice registeredDevice;
+   /**
+    * Values readed from device. May differ from runtimeId and versionId.
+    */
    private HashMap<Integer, PortState> portStates;
 
    public static final int INPUT = 1, OUTPUT = 2, INTERNAL_ADDRESS = 4;
@@ -47,12 +62,11 @@ public class PortConnector {
     * @param portIdentifier
     * @throws Exception
     */
-   public PortConnector(PortManager manager, CommPortIdentifier portIdentifier) throws Exception {
+   public Device(DeviceManager manager) throws Exception {
       this.manager = manager;
       this.portStates = new HashMap<>();
-      if (portIdentifier.isCurrentlyOwned()) {
-         throw new Exception("Port " + portIdentifier.getName() + " is in use.");
-      }
+      this.runtimeId = BLANK_GUID;
+      this.versionId = BLANK_GUID;
 
       commandReceiver = new PortReaderAdapter() {
 
@@ -67,11 +81,23 @@ public class PortConnector {
          }
 
       };
+   }
+
+   /**
+    * Connects with especified port and tests if is a compatible device
+    *
+    * @param portIdentifier
+    * @throws Exception
+    */
+   public void connect(CommPortIdentifier portIdentifier) throws Exception {
+      if (portIdentifier.isCurrentlyOwned()) {
+         throw new Exception("Port " + portIdentifier.getName() + " is in use.");
+      }
       CommPort commPort = portIdentifier.open(this.getClass().getName(), TIMEOUT);
       if (commPort instanceof SerialPort) {
          serialPort = (RXTXPort) commPort;
          // default ezHome device connection parameters
-         serialPort.setSerialPortParams(115200,
+         serialPort.setSerialPortParams(BAUDRATE,
                  SerialPort.DATABITS_8,
                  SerialPort.STOPBITS_1,
                  SerialPort.PARITY_NONE);
@@ -83,6 +109,19 @@ public class PortConnector {
       }
       // Delay to ensure adequate response from device
       Thread.sleep(3000);
+
+   }
+
+   /**
+    * Tests if this device is ezHome compatible
+    *
+    * @return true if is a compatible device
+    * @throws IOException
+    */
+   public boolean testCompatibility() throws IOException {
+      // To test compatibility a runtimeId request is send. If there is no response, or incompatible response, is there an incompatible device
+      String response = sendCommand("runtime-id");
+      return !(response == null || !response.startsWith("RuntimeId="));
    }
 
    /**
@@ -113,10 +152,10 @@ public class PortConnector {
 
          } else if (line.startsWith("RuntimeId=")) {
             String[] parts = line.split("=", 2);
-            this.runtimeId = parts[1];//.substring(0, 15);
+            setRuntimeId(parts[1]);
          } else if (line.startsWith("VersionId=")) {
             String[] parts = line.split("=", 2);
-            this.versionId = parts[1];
+            setVersionId(parts[1]);
          }
       }
    }
@@ -128,12 +167,14 @@ public class PortConnector {
          portState.setInput(true);
       }
       if ((type & OUTPUT) == OUTPUT) {
-         portState.setInput(true);
+         portState.setOutput(true);
       }
       if ((type & INTERNAL_ADDRESS) == INTERNAL_ADDRESS) {
-         portState.setInput(true);
+         portState.setInternalAddress(true);
       }
-      System.out.println("Port "+ address+ " state "+state);
+      System.out.println("read "+type);
+      // Register Event for remote sync
+      DeviceManager.getInstance().registerEvent(new DevicePortStateEvent(this, portState));
    }
 
    public PortState getPortState(int address) {
@@ -145,26 +186,20 @@ public class PortConnector {
          return portStates.get(address);
       }
    }
-   
+
    public JSONObject getPortStates() {
       JSONObject result = new JSONObject();
       JSONArray states = new JSONArray();
       result.put("states", states);
       for (Integer key : portStates.keySet()) {
-         JSONObject state = new JSONObject();
-         state.put("address", portStates.get(key).getAddress());
-         state.put("state", portStates.get(key).isState());
-         state.put("input", portStates.get(key).isInput());
-         state.put("output", portStates.get(key).isOutput());
-         state.put("internalAddress", portStates.get(key).isInternalAddress());
-         states.put(state);
+         states.put(portStates.get(key).toJSON());
       }
       return result;
    }
-   
+
    private void printStates() {
       for (Integer keySet : portStates.keySet()) {
-         System.out.println("AD: "+keySet + " state: "+ portStates.get(keySet).isState());
+         System.out.println("AD: " + keySet + " state: " + portStates.get(keySet).getState());
       }
    }
 
@@ -261,12 +296,33 @@ public class PortConnector {
    }
 
    /**
+    * Sets runtimeId for this device
+    *
+    * @param runtimeId
+    */
+   private void setRuntimeId(String runtimeId) {
+      this.runtimeId = runtimeId;
+   }
+
+   /**
     * Returns current versionId identified from device.
     *
     * @return a 32 chars unique string, identified current version on device
     */
    public String getVersionId() {
       return this.versionId;
+   }
+
+   private void setVersionId(String versionId) {
+      this.versionId = versionId;
+   }
+
+   public RegisteredDevice getRegisteredDevice() {
+      return registeredDevice;
+   }
+
+   protected void setRegisteredDevice(RegisteredDevice registeredDevice) {
+      this.registeredDevice = registeredDevice;
    }
 
    /**
@@ -305,7 +361,7 @@ public class PortConnector {
          this.internalAddress = internalAddress;
       }
 
-      public boolean isState() {
+      public boolean getState() {
          return state;
       }
 
@@ -345,6 +401,27 @@ public class PortConnector {
          this.internalAddress = internalAddress;
       }
 
+      public JSONObject toJSON() {
+         JSONObject state = new JSONObject();
+         state.put("address", getAddress());
+         state.put("state", getState());
+         if (isInput()) {
+            state.put("input", isInput());
+         }
+         if (isOutput()) {
+            state.put("output", isOutput());
+         }
+         if (isInternalAddress()) {
+            state.put("internalAddress", isInternalAddress());
+         }
+         return state;
+      }
+
+   }
+
+   public static void main(String[] args) throws Exception {
+      Device d = new Device(DeviceManager.getInstance());
+      d.connect(CommPortIdentifier.getPortIdentifier("/dev/ttyUSB0"));
    }
 
 }

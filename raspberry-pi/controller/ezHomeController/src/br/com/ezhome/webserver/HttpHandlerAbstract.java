@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  *
@@ -55,5 +57,10 @@ public abstract class HttpHandlerAbstract implements HttpHandler {
       }
       return queryToMap(sb.toString());
    }
+   
+   public JSONObject getJSONRequest(HttpExchange exchange) {
+      return new JSONObject(new JSONTokener(exchange.getRequestBody()));
+   }
+   
    
 }

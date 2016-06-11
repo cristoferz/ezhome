@@ -98,8 +98,8 @@ public class FirmwareUploader {
 
    /**
     * Return the serial port for this FirmwareUploader.
-    * 
-    * @return 
+    *
+    * @return
     */
    public String getPort() {
       return port;
@@ -107,14 +107,13 @@ public class FirmwareUploader {
 
    /**
     * Sets the serial port for this FirmwareUploader
-    *    
-    * @param port 
+    *
+    * @param port
     */
    public void setPort(String port) {
       this.port = port;
    }
 
-   
    public boolean isAutoErase() {
       return autoErase;
    }
@@ -193,17 +192,22 @@ public class FirmwareUploader {
       parameters.add("-Uflash:w:" + getHexFile().getAbsolutePath() + ":i");
       parameters.add("-q");
 
-      Process p = Runtime.getRuntime().exec(parameters.toArray(new String[parameters.size()]));
+      try {
+         DeviceManager.getInstance().pause();
+         Process p = Runtime.getRuntime().exec(parameters.toArray(new String[parameters.size()]));
 
-      StringBuilder sb = new StringBuilder();
-      try (InputStream es = p.getErrorStream()) {
-         int len;
-         byte[] buf = new byte[1024];
-         while ((len = es.read(buf)) != -1) {
-            sb.append(new String(buf, 0, len));
+         StringBuilder sb = new StringBuilder();
+         try (InputStream es = p.getErrorStream()) {
+            int len;
+            byte[] buf = new byte[1024];
+            while ((len = es.read(buf)) != -1) {
+               sb.append(new String(buf, 0, len));
+            }
          }
+         return new UploadResult(sb.toString(), p.waitFor());
+      } finally {
+         DeviceManager.getInstance().resume();
       }
-      return new UploadResult(sb.toString(), p.waitFor());
    }
 
    public class UploadResult {

@@ -2,7 +2,7 @@ package br.com.ezhome;
 
 import br.com.ezhome.config.ConfigFile;
 import br.com.ezhome.device.ComPortReader;
-import br.com.ezhome.device.PortConnector;
+import br.com.ezhome.device.Device;
 import br.com.ezhome.scheduler.GlobalScheduler;
 import br.com.ezhome.webserver.WebServer;
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class Controller {
          WebServer.create(ConfigFile.getInstance().getHttpPort());
 
          // Start the scheduler
-         new GlobalScheduler().start();
+         //new GlobalScheduler().start();
 
       } catch (Exception ex) {
          getLogger().log(Level.SEVERE, "Initialization errors", ex);

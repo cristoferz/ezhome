@@ -1,6 +1,6 @@
 package br.com.ezhome.device.program;
 
-import br.com.ezhome.device.PortConnector;
+import br.com.ezhome.device.Device;
 import br.com.ezhome.device.program.instruction.Coil;
 import br.com.ezhome.device.program.instruction.FallingEdge;
 import br.com.ezhome.device.program.instruction.NC;
@@ -194,7 +194,7 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
       return serie;
    }
 
-   public void sendProgram(PortConnector port) throws IOException {
+   public void sendProgram(Device port) throws IOException {
       writeProgram();
       port.sendCommand("download " + getProgramSize());
       port.write(getArrayBuilder().getBytes());

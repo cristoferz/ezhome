@@ -12,10 +12,10 @@ import java.util.logging.Level;
  */
 public class PortWriter {
 
-   private final PortConnector connector;
+   private final Device connector;
    private final OutputStream outputStream;
 
-   public PortWriter(PortConnector connector, OutputStream outputStream) {
+   public PortWriter(Device connector, OutputStream outputStream) {
       this.connector = connector;
       this.outputStream = outputStream;
    }

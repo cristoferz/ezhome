@@ -1,11 +1,13 @@
 package br.com.ezhome.scheduler;
 
 import br.com.ezhome.Controller;
-import br.com.ezhome.device.PortManager;
+import br.com.ezhome.device.DeviceManager;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.TimerTask;
@@ -29,9 +31,14 @@ public class PortConnectorSchedulerTask extends TimerTask {
    @Override
    public void run() {
       try {
-         PortManager.getInstance().scanDevices(false);
+         DeviceManager.getInstance().scanDevices(false);
       } catch (Exception ex) {
          Controller.getLogger().log(Level.SEVERE, "Error scanning devices", ex);
+      }
+      try {
+         DeviceManager.getInstance().localRegisterEvents();
+      } catch (Exception ex) {
+         Controller.getLogger().log(Level.SEVERE, "Error registering events", ex);
       }
    }
 

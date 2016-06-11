@@ -1,70 +1,57 @@
 package br.com.ezhome.webserver;
 
 import br.com.ezhome.device.FirmwareUploader;
-import br.com.ezhome.device.PortConnector;
-import br.com.ezhome.device.PortManager;
+import br.com.ezhome.device.Device;
+import br.com.ezhome.device.DeviceManager;
+import br.com.ezhome.device.model.DeviceModels;
 import br.com.ezhome.device.program.ProgramBuilder;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import gnu.io.CommPortIdentifier;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  *
  * @author cristofer
  */
-public class HttpHandlerDevice extends HttpHandlerAbstract{
+public class HttpHandlerDevice extends HttpHandlerAbstract {
 
    @Override
    public void handle(HttpExchange exchange) throws IOException {
+      System.out.println("Content-type: "+exchange.getRequestHeaders().getFirst("Content-type"));
+      System.out.println("method: "+exchange.getRequestMethod());
+      //
+      //System.out.println("data: "+data.toString());
       OutputStream os = exchange.getResponseBody();
       try {
          String path = exchange.getRequestURI().getPath();
 
          if (path.equals("/device/list")) {
-            
-            JSONObject json = new JSONObject();
-            JSONArray devices = new JSONArray();
-            ArrayList<PortConnector> connectors = PortManager.getInstance().listConnectedPorts();
-            for (PortConnector connector : connectors) {
-               JSONObject device = new JSONObject();
-               device.put("name", connector.getName());
-               device.put("currentOwner", "self");
-               device.put("connected", true);
-               device.put("runtimeId", connector.getRuntimeId());
-               devices.put(device);
-            }
-            Enumeration<CommPortIdentifier> ports = PortManager.getInstance().listPorts();
-            while (ports.hasMoreElements()) {
-               CommPortIdentifier portIdentifier = ports.nextElement();
-               JSONObject device = new JSONObject();
-               device.put("name", portIdentifier.getName());
-               device.put("currentOwner", portIdentifier.getCurrentOwner());
-               device.put("connected", false);
-               devices.put(device);
-            }
-            json.put("devices", devices);
-            exchange.sendResponseHeaders(200, json.toString().getBytes().length);
-            os.write(json.toString().getBytes());
+            JSONObject json = DeviceManager.getInstance().jsonListPorts();
+            byte[] response = json.toString().getBytes();
+            exchange.sendResponseHeaders(200, response.length);
+            os.write(response);
          } else if (path.equals("/device/connect")) {
+            JSONObject data = new JSONObject(new JSONTokener(exchange.getRequestBody()));
+            
+            
             // Conecta a um arduino já preparado
             JSONObject json = new JSONObject();
 
             try {
-               PortManager.getInstance().connect(getUrlParameters(exchange).get("device"));
+               DeviceManager.getInstance().connect(data.getString("portName"));
                json.put("success", true);
                exchange.sendResponseHeaders(200, json.toString().getBytes().length);
             } catch (Exception ex) {
                json.put("success", false);
-               json.put("message", ex.getMessage());
+               json.put("message", "test"+ex.getMessage());
+               exchange.getResponseHeaders().add("Content-type", "application/json");
                exchange.sendResponseHeaders(500, json.toString().getBytes().length);
             }
             os.write(json.toString().getBytes());
@@ -72,7 +59,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract{
             // Desconecta do arduino
             JSONObject json = new JSONObject();
             HashMap<String, String> urlParameters = getUrlParameters(exchange);
-            PortConnector connector = PortManager.getInstance().get(urlParameters.get("device"));
+            Device connector = DeviceManager.getInstance().get(urlParameters.get("device"));
             if (connector == null) {
                json.put("success", false);
                json.put("message", "Device " + urlParameters.get("device") + " is not connected.");
@@ -96,7 +83,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract{
             JSONObject json = new JSONObject();
             HashMap<String, String> urlParameters = getUrlParameters(exchange);
             // disconnect before upload
-            PortConnector connector = PortManager.getInstance().get(urlParameters.get("device"));
+            Device connector = DeviceManager.getInstance().get(urlParameters.get("device"));
             if (connector != null) {
                connector.close();
             }
@@ -129,7 +116,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract{
 
          } else if (path.equals("/device/send")) {
             HashMap<String, String> urlParameters = getUrlParameters(exchange);
-            PortConnector connector = PortManager.getInstance().connect(urlParameters.get("device"));
+            Device connector = DeviceManager.getInstance().connect(urlParameters.get("device"));
             String result = connector.sendCommand(urlParameters.get("command"));
             JSONObject json = new JSONObject();
             json.put("success", true);
@@ -138,7 +125,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract{
             os.write(json.toString().getBytes());
          } else if (path.equals("/device/program")) {
             HashMap<String, String> postParameters = getPostParameters(exchange);
-            PortConnector connector = PortManager.getInstance().connect(postParameters.get("device"));
+            Device connector = DeviceManager.getInstance().connect(postParameters.get("device"));
             String program = postParameters.get("program");
             JSONObject obj = new JSONObject(program);
             ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
@@ -151,11 +138,20 @@ public class HttpHandlerDevice extends HttpHandlerAbstract{
             exchange.sendResponseHeaders(200, json.toString().getBytes().length);
             os.write(json.toString().getBytes());
          } else if (path.equals("/device/states")) {
-            HashMap<String, String> urlParameters = getUrlParameters(exchange);
-            PortConnector connector = PortManager.getInstance().connect(urlParameters.get("device"));
-            
+            JSONObject data = new JSONObject(new JSONTokener(exchange.getRequestBody()));
+            Device connector = DeviceManager.getInstance().connect(data.getString("portName"));
+
+            exchange.getResponseHeaders().add("Content-type", "application/json");
+            //exchange.getResponseHeaders().add(, "application/json");
             exchange.sendResponseHeaders(200, connector.getPortStates().toString().getBytes().length);
             os.write(connector.getPortStates().toString().getBytes());
+         } else if (path.equals("/device/models")) {
+            DeviceModels models = new DeviceModels();
+            models.init();
+            JSONObject result = models.toJSON();
+
+            exchange.sendResponseHeaders(200, result.toString().getBytes().length);
+            os.write(result.toString().getBytes());
          } else {
             String response = "Invalid URL: " + path;
             exchange.sendResponseHeaders(404, response.getBytes().length);

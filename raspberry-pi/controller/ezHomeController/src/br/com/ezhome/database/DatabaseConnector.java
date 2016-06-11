@@ -1,5 +1,7 @@
 package br.com.ezhome.database;
 
+import br.com.ezhome.config.ConfigFile;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,29 +15,24 @@ import java.util.Properties;
  */
 public class DatabaseConnector {
 
-   public DatabaseConnector() {
-   }
+   private static DatabaseConnector instance;
 
-   public void connect() throws SQLException {
-      String url = "jdbc:postgresql://localhost:5432/ezhome";
-      Properties props = new Properties();
-      props.setProperty("user", "cristofer");
-      props.setProperty("password", "zdepski");
-      //props.setProperty("ssl", "true");
-      Connection conn = DriverManager.getConnection(url, props);
-      PreparedStatement stmt = conn.prepareStatement("select * from config.device");
-      try {
-         ResultSet rs = stmt.executeQuery();
-         while (rs.next()) {
-            System.out.println(": " + rs.getString("id") + "-" + rs.getString("runtime_id") + " : " + rs.getString("version_id") + " = " + rs.getString("connected_port"));
-         }
-      } finally {
-         stmt.close();
+   public static DatabaseConnector getInstance() {
+      if (instance == null) {
+         instance = new DatabaseConnector();
       }
-
+      return instance;
    }
 
-   public static void main(String[] args) throws SQLException {
-      new DatabaseConnector().connect();
+   private DatabaseConnector() {
+   }
+
+   public Connection connect() throws SQLException, IOException {
+      String url = "jdbc:postgresql://" + ConfigFile.getInstance().getDatabaseHost() + ":" + ConfigFile.getInstance().getDatabasePort() + "/" + ConfigFile.getInstance().getDatabaseName();
+      Properties props = new Properties();
+      props.setProperty("user", ConfigFile.getInstance().getDatabaseUsername());
+      props.setProperty("password", ConfigFile.getInstance().getDatabasePassword());
+      //props.setProperty("ssl", "true");
+      return DriverManager.getConnection(url, props);
    }
 }

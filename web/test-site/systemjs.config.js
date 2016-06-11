@@ -10,7 +10,7 @@
   //map tells the System loader where to look for things
   var  map = {
     'app':                        'app',
-
+    '@angular2-material': 'node_modules/@angular2-material',
     '@angular':                   'https://npmcdn.com/@angular', // sufficient if we didn't pin the version
     'angular2-in-memory-web-api': 'https://npmcdn.com/angular2-in-memory-web-api', // get latest
     'rxjs':                       'https://npmcdn.com/rxjs@5.0.0-beta.6',
@@ -36,6 +36,18 @@
     'router-deprecated',
     'upgrade',
   ];
+  
+  // Angular Material 2 Packages to load.
+var _materialPackages = [
+  'core', 'toolbar', 'button', 'card', 'checkbox', 'icon', 'input', 'list', 'progress-bar',
+  'progress-circle', 'radio', 'sidenav'
+];
+
+_materialPackages.forEach(function(item) {
+  // All Material 2 components are prefixed with  @angular2-material and use
+  // the components name as entry point.
+  packages['@angular2-material/' + item] = { main: item };
+});
 
   // Add map entries for each angular package
   // only because we're pinning the version with `ngVer`.
