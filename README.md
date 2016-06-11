@@ -9,3 +9,5 @@ We are developing the basis for customization capabilitys, communication standar
 
 More details can be founded on Issues.
 
+## See also ##
+[Project Pieces](PROJECT_PIECES.md)
