@@ -30,7 +30,7 @@ public class FirmwareUploader {
     *
     */
    public FirmwareUploader() {
-      this.programmer = "arduino";
+      this.programmer = "wiring";
       this.baudRate = 115200;
       this.autoErase = false;
       this.avrDevice = null;

@@ -993,7 +993,7 @@ is divided into following sections:
         <j2seproject3:copylibs manifest="${tmp.manifest.file}"/>
 	<echo level="info">Copying hex files...</echo>
 	<copy todir="src/br/com/ezhome/device/hex">
-           <fileset dir="../../../arduino/Master/">
+           <fileset dir="../../devices/Master/">
                <include name="**/*.hex" />
                <exclude name="**/*bootloader*" />
            </fileset>
