@@ -1,0 +1,33 @@
+Local - entende-se por CASA ou escritório, enfim, local onde serão controlados os itens da casa
+Local nivel - indica o andar para controle de sobrados, por exemplo, um local pode ter vários andares e consequentemente cada andar tem uma planta
+Controlador - são os arduinos e raspberry
+Componentes - lampadas, interruptores, tudo oque interage com a casa
+
+contolador possui
+modelo - tipo do controlador
+função - indica se é um controlador de componentes ou um receptor de frequencia (inicialmente)
+portas - para vinculo com os componentes
+
+
+Componentes possuem
+Tipo - lampada, interruptor...
+Modelo - no caso de interruptor por exemplo: pode ser normal, pode ser interruptor tipo campainha (que ao clicar volta)
+ - o modelo de componente deve indicar também quantas portas de entrada e quantas de saídas ele utiliza além de indicar qual o tipo de porta necessária
+ * digital
+ * analógica
+ * PWM
+porta - indica onde está ligado (a qual arduino e em que porta)
+função
+
+Entrada - apenas um componente pode estar ligado a uma porta de entrada
+Saída - posso ter mais e um componente ligado a mesma
+
+-------------------------------------------------------------------------------
+
+criar estrutura de plantas
+ - permite inserir + de uma planta em um local - para controlar andares diferentes do mesmo local
+
+Criar prototipação da interface de configuração
+ - vinculo do componente com a porta do raspberry
+
+utilização do mongoDB
