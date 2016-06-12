@@ -27,6 +27,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
       //
       //System.out.println("data: "+data.toString());
       OutputStream os = exchange.getResponseBody();
+      exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
       try {
          String path = exchange.getRequestURI().getPath();
 
@@ -158,18 +159,24 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                }
                break;
             case "/device/program":
-               HashMap<String, String> postParameters = getPostParameters(exchange);
-               Device connector = DeviceManager.getInstance().connect(postParameters.get("device"));
-               String program = postParameters.get("program");
-               JSONObject obj = new JSONObject(program);
-               ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
-               builder.loadJSON(obj);
-               builder.sendProgram(connector);
-               JSONObject json = new JSONObject();
-               json.put("success", true);
-               json.put("result", "OK");
-               exchange.sendResponseHeaders(200, json.toString().getBytes().length);
-               os.write(json.toString().getBytes());
+               switch (exchange.getRequestMethod()) {
+                  case "POST":
+                     HashMap<String, String> postParameters = getPostParameters(exchange);
+                     Device connector = DeviceManager.getInstance().connect(postParameters.get("device"));
+                     String program = postParameters.get("program");
+                     JSONObject obj = new JSONObject(program);
+                     ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
+                     builder.loadJSON(obj);
+                     builder.sendProgram(connector);
+                     JSONObject json = new JSONObject();
+                     json.put("success", true);
+                     json.put("result", "OK");
+                     exchange.sendResponseHeaders(200, json.toString().getBytes().length);
+                     os.write(json.toString().getBytes());
+                     break;
+                  default:
+                     throw new Exception("Invalid method: " + exchange.getRequestMethod());
+               }
                break;
             case "/device/states":
                switch (exchange.getRequestMethod()) {

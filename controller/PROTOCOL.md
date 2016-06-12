@@ -100,7 +100,7 @@ Current configs loaded to device are preserved on proccess.
     
 ------
 ### Send ###
-Sends a command to especified **portName** and gets the result.
+Sends a **command** to especified **portName** and gets the result.
 
 #### Request ####
     POST /device/send
