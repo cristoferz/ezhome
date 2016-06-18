@@ -3,12 +3,12 @@ This document provides protocol definition for devices used on ezHome Project.
 This protocol will be used on communications via serial port between devices and ezHome Controller.
 
 ## Table of contents
-1. [Communication Standards](#Communication Standards)
-    1. [Send messages](#Send Messages)
-    1. [Received Messages](#Received Messages)
-1. [Query Functions](#Query Functions)
-    1. [Information query](#Information query)
-    1. [Device Config query](#device-config-query)
+1. [Communication Standards](#markdown-header-communication-standards)
+    1. [Send messages](#markdown-header-send-messages)
+    1. [Received Messages](#markdown-header-received-messages)
+1. [Query Functions](#markdown-header-query-functions)
+    1. [Information query](#markdown-header-information-query)
+    1. [Device Config query](#markdown-header-device-config-query)
 
 ----    
 
