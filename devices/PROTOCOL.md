@@ -8,7 +8,7 @@ This protocol will be used on communications via serial port between devices and
     1. [Received Messages](#Received Messages)
 1. [Query Functions](#Query Functions)
     1. [Information query](#Information query)
-    1. [Device Config query](#Device Config query)
+    1. [Device Config query](#device-config)
 
 ----    
 
@@ -84,7 +84,7 @@ It depends directly on EEPROM size of device.
 * Current Program Size: return the size of current program loaded on device.
 * EOM: the finish string
 
-### Device Config query
+### Device Config query <a name='device-config' />
 Device config query returns the device model and actual port configurations for this device. 
 
 Example of request:
