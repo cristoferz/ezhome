@@ -84,7 +84,7 @@ It depends directly on EEPROM size of device.
 * Current Program Size: return the size of current program loaded on device.
 * EOM: the finish string
 
-### Device Config query <a name='device-config' />
+### Device Config query <a id='device-config'></a>
 Device config query returns the device model and actual port configurations for this device. 
 
 Example of request:
