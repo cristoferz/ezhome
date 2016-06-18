@@ -2,7 +2,17 @@
 This document provides protocol definition for devices used on ezHome Project. 
 This protocol will be used on communications via serial port between devices and ezHome Controller.
 
-## Communication Standards
+## Table of contents
+1. [Communication Standards](#Communication Standards)
+    1. [Send messages](#Send Messages)
+    1. [Received Messages](#Received Messages)
+1. [Query Functions](#Query Functions)
+    1. [Information query](#Information query)
+    1. [Device Config query](#Device Config query)
+
+----    
+
+## Communication Standards 
 Messages of communication protocol have 2 types:
 1. Send messages
 1. Received messages
@@ -39,8 +49,6 @@ Example of status message:
 
     IS=1
     
-
-
 ## Query Functions
 Query are operations used to query informations from device. Informations can be states of addresses, 
 number of ports, runtimeId, version etc.
