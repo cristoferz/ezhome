@@ -1,7 +1,8 @@
 # JSON Ladder
 JSON Ladder is the base language used to program ezHome Project compatible devices 
 with the logics implemented on ezHome Project. Is basically a translation of the 
-Ladder Language to a JSON format. Above is an example of implementation:
+Ladder Language to a JSON format that is used for store configurations on local and remote databases.
+Above is a basic example of implementation:
 
     { "program":
         [ { "serie": [
@@ -60,44 +61,74 @@ Instructions are the interactions maded by Ladder logics.
 ### Coil
 Represents an Output on Ladder logics. The rule is that a coil is not preceded by any other instruction, so comes in the end of a serie.
 
-Example of a Coil representation:
+Coil representation:
       
     ---(  )---|
+
+Coil on JSON Ladder:
+
+    { "Coil": 1 }
+
+Coil on Java:
+
+    new Coil(builder, getReservedAddress(builder, ++addressIndex))
 
 ### NO/NC
 NO represents a "Normally Open" switch.
 
-Example of a NO representation:
+NO representation:
 
     ---[ ]---
 
+NO on JSON Ladder:
+
+    { "NO": 1 }
+
+NO on Java:
+
+    new NO(builder, getReservedAddress(builder, ++addressIndex))        
+
 NC represents a "Normally Closed" switch. Basically are the inverted NO.
 
-Example of a NC representation:
+NC representation:
 
     ---[/]---
+
+NC on JSON Ladder:
+
+    { "NC": 1 }
+
+NC on Java:
+
+    new NC(builder, getReservedAddress(builder, ++addressIndex))
 
 ### Edges
 Detects an edge on signal by the preceding logics. It detects an variation on signal from high to low (FallingEge) or low to high (RisingEdge), switching by only one cycle. No mather what signal is before an edge, the edges only pass a high signal just one cicle when the expected edge is detected, turning back to low signal.
 
 An address has to be associated with an edge. It is responsible for the control of edge detection across the cycles of the controller.
 
-Ps.: ''The address associated with the edges is used just for store the previous state of signal. Never could be used for other operations, with the risk of anomalous behaviors.''
-
-Example of FallingEdge representation:
+FallingEdge representation:
 
     -----[-_]-----
 
-Example of FallingEdge on JSON Ladder:
+FallingEdge on JSON Ladder:
 
-   { "FallingEdge": 1 }
+    { "FallingEdge": 1 }
 
-Example of RisingEdge representation:
-
-    -----[_-]-----
-
-Example of Java implementation:
+FallingEdge on Java:
 
     new FallingEdge(builder, getReservedAddress(builder, ++addressIndex))
     
+RisingEdge representation:
+
+    -----[_-]-----
+
+RisingEdge on JSON Ladder:
+
+    { "RisingEdge": 1 }    
+
+RisingEdge on Java:
+
     new RisingEdge(builder, getReservedAddress(builder, ++addressIndex))
+
+Ps.: *The address associated with the edges is used just for store the previous state of signal. Never could be used for other operations, with the risk of anomalous behaviors.*

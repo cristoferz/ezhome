@@ -7,5 +7,6 @@ others as needed. This kind is based on Arduino devices and is capable of contro
 digital inputs and outputs. It can also be expanded to use PWM ports and Analog ports.
 
 See also:
+
 * [JSON Ladder Format](JSON_LADDER.md)
 * [Device Communication Protocol](PROTOCOL.md)

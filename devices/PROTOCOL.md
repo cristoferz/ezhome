@@ -7,8 +7,24 @@ This protocol will be used on communications via serial port between devices and
     1. [Send messages](#markdown-header-send-messages)
     1. [Received Messages](#markdown-header-received-messages)
 1. [Query Functions](#markdown-header-query-functions)
-    1. [Information query](#markdown-header-information-query)
-    1. [Device Config query](#markdown-header-device-config-query)
+    1. [Information](#markdown-header-information-query)
+    1. [Device Config](#markdown-header-device-config-query)
+    1. [Status](#markdown-header-status-query)
+    1. [RuntimeId](#markdown-header-runtimeid-query)
+    1. [VersionId](#markdown-header-versionid-query)
+    1. [Read Boolean](#markdown-header-read-boolean)
+    1. [Read Numeric](#markdown-header-read-numeric)
+1. [Command Functions](#markdown-header-command-functions)
+    1. [Factory Reset](#markdown-header-factory-reset)
+    1. [Config Reset](#markdown-header-config-reset)
+    1. [Config Output](#markdown-header-config-output)
+    1. [Config PWM](#markdown-header-config-pwm)
+    1. [Start](#markdown-header-start)
+    1. [Stop](#markdown-header-stop)
+    1. [Write Boolean](#markdown-header-write-boolean)
+    1. [Write Numeric](#markdown-header-write-numeric)
+1. [Program Functions](#markdown-header-program-functions)
+    1. [Program Function Steps](#markdown-header-program-function-steps)
 
 ----    
 
@@ -294,7 +310,8 @@ stoping the engine, so there's a risk of anomalous behaviors on big program chan
 ### Program Function Steps
 As the program function are more complex, their are composed of 2 pairs of request/response, as described
 above:
-1. Header message: informs to device the size of the program that will be send. This prepared the device
+
+**Header message:** informs to device the size of the program that will be send. This prepared the device
 to receive full program;
 
 Example of request:
@@ -309,7 +326,7 @@ Response:
     
 This confirms that 50 bytes will be sended.
 
-2. Body message: Transmits the program itself. As the total bytes is defined by header message the device
+**Body message:** Transmits the program itself. As the total bytes is defined by header message the device
 reads the amount of bytes specified putting directly into program memory. At the end the program is writen
 on device EEPROM. 
 
