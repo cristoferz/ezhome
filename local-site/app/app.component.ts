@@ -11,8 +11,6 @@ import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 
 import { DeviceService }  from './services/device.service';
 import { Device }  from './classes/device';
-import { DEVICES } from './services/mock-devices';
-
 
 @Component({
   selector: 'my-app',

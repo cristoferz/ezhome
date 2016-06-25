@@ -3,7 +3,6 @@ import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 
-import { DEVICES } from '../services/mock-devices';
 import { Device } from '../classes/device';
 
 @Injectable()
