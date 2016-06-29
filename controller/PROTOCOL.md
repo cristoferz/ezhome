@@ -1,9 +1,188 @@
 # ezHome Controller Communication Protocol #
+## Activation and Login functions
+### Validate activation
+Returns activation state for this controller
+
+    GET    /activation/validate
+
+### Activate device
+Activates controller with remote site
+
+    POST   /activation/activate
+
+### Login
+Generates a token for access
+
+    POST   /login/token              
+
+----
+## Serial ports
+### List ports
+Lists all serial ports available to controller
+
+    GET    /config/serialPort?connected=<value>&portName=<value>
+
+Params:
+
+| Name | Required | Values | Description |
+|------|----------|--------|-------------|
+| connected | false | Boolean | Filter only ports on specified state |
+| portName | false | String | Filter only specified port |
+
+Response:
+
+    {
+        "serialPorts": [
+            {
+                "connected": true,
+                "versionId": "0000000000000000",
+                "currentOwner": "self",
+                "portName": "/dev/ttyUSB0",
+                "runtimeId": "0123456789ABCDEFFEDCBA9876543210"
+            },
+            {
+                "connected": false,
+                "portName": "/dev/ttyUSB0"
+            }
+        ]
+    }
+
+### Connect
+Try to connect an ezHome device on port
+
+    POST   /config/serialPort        
+    
+### Disconnect   
+Disconnect ezHome device on port, if available
+
+    DELETE /config/serialPort        
+
+### Scan
+Makes a manual scan on serialPorts
+
+    POST   /config/serialPort/scan    
+
+### Enable/disable Auto-Scan
+Enable/Disable autoscan on serial ports
+
+    POST   /config/serialPort/autoScan 
+
+----
+## Device
+### List devices
+Lists configured devices
+
+    GET    /config/device            
+
+### Insert a new device
+Insert a new device, creating a new UID
+
+    POST   /config/device            
+
+### Updates a device
+Update device data, keeping UID
+
+    PUT    /config/device            
+
+### Delete a device
+Inactivate device
+
+    DELETE /config/device            
+
+### Send command
+Sends a command to device
+
+    POST   /config/device/send
+
+### Initializes device
+Initializes device, burning firmware, creating a new UID for device and cleaning EEPROM.
+
+    POST   /config/device/initialize 
+
+### Upgrade firmware version
+Upgrades firmware version keeping UID for device
+
+    POST   /config/device/upgrade
+
+### Upload program do device
+Sends a program version to device
+
+    POST   /config/device/upload     
+
+### Config-reset
+Sends a program version to device
+
+    POST   /config/device/upload     
+
+### Factory-reset
+Resets all configs and program from device
+    
+    POST   /config/device/factory-reset
+
+### Resets device
+Resets device
+
+    POST   /config/device/reset
+
+### Pause
+Pause the device logics and disable all outputs
+
+    POST   /config/device/pause
+
+### Resume
+Resume the device logics
+
+    POST   /config/device/resume     
+
+### Information
+Reads device information
+
+    GET    /config/device/information
+
+### Device-config
+Reads device config
+
+    GET    /config/device/device-config
+
+### Read Boolean
+Reads a boolean value from device
+
+    GET    /config/device/readBoolean 
+
+### List Models
+Lists all available models of device
+
+    GET    /config/device/model      
+
+----
+## Program
+### List Programs
+Lists program versions available and where they are applied
+
+    GET    /config/device/program
+
+### Insert Program
+Creates a new version of program
+
+    POST   /config/device/program
+
+### Delete Program
+Deletes a program version
+
+    DELETE /config/device/program
+
+
+
+
+
+
+
+
 
 ## Devices ##
 ### List ###
 List devices and serial ports available to the controller. Connected devices 
-will return runtimeId and versionId, as a way recognize the device independant 
+will return runtimeId and versionId, as a way to recognize the device independant 
 of phisical port connected.  
 
 #### Request ####
