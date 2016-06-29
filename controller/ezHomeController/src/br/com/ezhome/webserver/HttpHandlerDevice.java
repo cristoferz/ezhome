@@ -171,15 +171,15 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                exchange.sendResponseHeaders(200, json.toString().getBytes().length);
                os.write(json.toString().getBytes());
                break;
-            case "/device/states":
+            case "/device/states": 
                switch (exchange.getRequestMethod()) {
                   case "POST":
                      exchange.getResponseHeaders().add("Content-type", "application/json");
                      JSONObject data = getJSONRequest(exchange);
-                     Device connector = DeviceManager.getInstance().connect(data.getString("portName"));
+                     Device connector2 = DeviceManager.getInstance().connect(data.getString("portName"));
                      //exchange.getResponseHeaders().add(, "application/json");
-                     exchange.sendResponseHeaders(200, connector.getPortStates().toString().getBytes().length);
-                     os.write(connector.getPortStates().toString().getBytes());
+                     exchange.sendResponseHeaders(200, connector2.getPortStates().toString().getBytes().length);
+                     os.write(connector2.getPortStates().toString().getBytes());
                      break;
                   default:
                      throw new Exception("Invalid method: " + exchange.getRequestMethod());
