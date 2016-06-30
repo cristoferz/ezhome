@@ -1,0 +1,5 @@
+if [ -x /etc/init.d/ezhome ]
+then
+   echo "Stoping ezHome daemon"
+   service ezhome stop
+fi
