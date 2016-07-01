@@ -1,9 +1,0 @@
-Package: ezHome
-Version: 0.1-2
-Section: base
-Priority: optional
-Architecture: all
-Depends: 
-Maintainer: Cristofer Zdepski <cristoferz@gmail.com>
-Description: ezHome Controller
- This is the base controller for ezHome Project
