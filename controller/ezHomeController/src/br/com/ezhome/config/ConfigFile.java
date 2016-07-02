@@ -116,6 +116,14 @@ public final class ConfigFile {
       this.properties.setProperty("httpPort", "" + value);
    }
    
+   public String getWebsiteFolder() {
+      return this.properties.getProperty("websiteFolder", "local-site");
+   }
+   
+   public void setWebsiteFolder(String folder) {
+      this.properties.setProperty("websiteFolder", folder);
+   }
+   
    public Level getLoggerLevel() {
       return Level.parse(this.properties.getProperty("loggerLevel", "INFO"));
    }
