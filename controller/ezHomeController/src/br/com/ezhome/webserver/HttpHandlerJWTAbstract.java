@@ -16,7 +16,6 @@ public abstract class HttpHandlerJWTAbstract extends HttpHandlerAbstract {
    private JWT jwt;
 
    public HttpHandlerJWTAbstract() {
-      // TODO extract the secret from secure location
       this.jwt = new JWT(EzHomeSecurityManager.getInstance().getLocalSecret());
    }
 

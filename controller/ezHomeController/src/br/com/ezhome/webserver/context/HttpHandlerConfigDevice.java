@@ -1,5 +1,6 @@
 package br.com.ezhome.webserver.context;
 
+import br.com.ezhome.database.DatabaseConnector;
 import br.com.ezhome.device.Device;
 import br.com.ezhome.device.DeviceManager;
 import br.com.ezhome.device.FirmwareUploader;
@@ -8,6 +9,14 @@ import br.com.ezhome.webserver.HttpHandlerJWTAbstract;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Random;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -18,8 +27,7 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
 
    @Override
    public void handleRequest(HttpExchange he) throws Exception {
-      OutputStream os = he.getResponseBody();
-      try {
+      try (OutputStream os = he.getResponseBody()) {
          String path = he.getRequestURI().getPath();
          switch (path) {
             case "/config/device":
@@ -139,7 +147,7 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
                      throw new Exception("Invalid method \"" + he.getRequestMethod() + "\" for path \"" + path + "\"");
                }
                break;
-            case "/device/model":
+            case "/config/device/model":
                switch (he.getRequestMethod()) {
                   case "GET":
                      listModel(he, os);
@@ -154,30 +162,98 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
                os.write(result.getBytes());
                break;
          }
-      } finally {
-         os.close();
       }
    }
 
-   private void list(HttpExchange he, OutputStream os) throws IOException {
-      he.getResponseHeaders().add("Content-type", "application/json");
+   private void list(HttpExchange he, OutputStream os) throws IOException, SQLException {
       JSONObject result = new JSONObject();
-      he.sendResponseHeaders(200, result.toString().getBytes().length);
-      os.write(result.toString().getBytes());
-      
-      
+      JSONArray devices = new JSONArray();
+      result.put("devices", devices);
+      try (Connection con = DatabaseConnector.getInstance().connect()) {
+         try (PreparedStatement stmt = con.prepareStatement("select device_id\n"
+                 + "     , name\n"
+                 + "     , model_id\n"
+                 + "     , runtime_id\n"
+                 + "     , version_id\n"
+                 + "     , status_id"
+                 + "  from config.device\n"
+                 + " where 1=1")) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+               JSONObject device = new JSONObject();
+               device.put("device_id", rs.getInt("device_id"));
+               device.put("name", rs.getString("name"));
+               device.put("model_id", rs.getInt("model_id"));
+               device.put("runtime_id", rs.getString("runtime_id"));
+               device.put("version_id", rs.getString("version_id"));
+               device.put("status_id", rs.getInt("status_id"));
+               devices.put(device);
+            }
+            he.getResponseHeaders().add("Content-type", "application/json");
+            he.sendResponseHeaders(200, result.toString().getBytes().length);
+            os.write(result.toString().getBytes());
+         }
+      }
    }
 
-   private void insert(HttpExchange he, OutputStream os) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   private void insert(HttpExchange he, OutputStream os) throws SQLException, IOException {
+      JSONObject parameters = getJSONRequest(he);
+      JSONObject result = new JSONObject();
+      try (Connection con = DatabaseConnector.getInstance().connect()) {
+         String newGUID = guid2String(generateGUID());
+         try (PreparedStatement stmt = con.prepareStatement("insert into config.device\n"
+                 + "   (name, model_id, runtime_id)\n"
+                 + "values\n"
+                 + "   (?, ?, ?)\n"
+                 + "returning device_id")) {
+            stmt.setString(1, parameters.getString("name"));
+            stmt.setInt(2, parameters.getInt("model_id"));
+            stmt.setString(3, newGUID);
+            result.put("success", true);
+            result.put("runtime_id", newGUID);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+               result.put("device_id", rs.getInt(1));
+            }
+            he.getResponseHeaders().add("Content-type", "application/json");
+            he.sendResponseHeaders(200, result.toString().getBytes().length);
+            os.write(result.toString().getBytes());
+         }
+      }
    }
 
-   private void update(HttpExchange he, OutputStream os) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   private void update(HttpExchange he, OutputStream os) throws SQLException, IOException {
+      JSONObject parameters = getJSONRequest(he);
+      JSONObject result = new JSONObject();
+      try (Connection con = DatabaseConnector.getInstance().connect()) {
+         try (PreparedStatement stmt = con.prepareStatement("update config.device\n"
+                 + "   set name = ?"
+                 + " where device_id = ?")) {
+            stmt.setString(1, parameters.getString("name"));
+            stmt.setInt(2, parameters.getInt("device_id"));
+            result.put("success", true);
+            stmt.execute();
+            he.getResponseHeaders().add("Content-type", "application/json");
+            he.sendResponseHeaders(200, result.toString().getBytes().length);
+            os.write(result.toString().getBytes());
+         }
+      }
    }
 
-   private void delete(HttpExchange he, OutputStream os) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   private void delete(HttpExchange he, OutputStream os) throws SQLException, IOException {
+      JSONObject parameters = getJSONRequest(he);
+      JSONObject result = new JSONObject();
+      try (Connection con = DatabaseConnector.getInstance().connect()) {
+         try (PreparedStatement stmt = con.prepareStatement("delete from config.device\n"
+                 + " where device_id = ?")) {
+            stmt.setInt(1, parameters.getInt("device_id"));
+            result.put("success", true);
+            stmt.execute();
+            he.getResponseHeaders().add("Content-type", "application/json");
+            he.sendResponseHeaders(200, result.toString().getBytes().length);
+            os.write(result.toString().getBytes());
+         }
+      }
    }
 
    private void sendCommand(HttpExchange he, OutputStream os) throws Exception {
@@ -194,7 +270,7 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
 
    private void initialize(HttpExchange he, OutputStream os) throws IOException, InterruptedException {
       // TODO generate RuntimeId and apply to device
-      
+
       he.getResponseHeaders().add("Content-type", "application/json");
       JSONObject json = new JSONObject();
       JSONObject parameters = getJSONRequest(he);
@@ -272,8 +348,49 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
    }
 
-   private void listModel(HttpExchange he, OutputStream os) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   private void listModel(HttpExchange he, OutputStream os) throws Exception {
+      he.getResponseHeaders().add("Content-type", "application/json");
+      JSONObject result = new JSONObject();
+      JSONArray models = new JSONArray();
+      result.put("models", models);
+      try (Connection con = DatabaseConnector.getInstance().connect()) {
+         try (PreparedStatement stmt = con.prepareStatement(
+                 "select model_id\n"
+                 + "     , model_cod\n"
+                 + "     , name\n"
+                 + "     , thumbnail\n"
+                 + "  from config.device_model m\n"
+                 + " where 1=1")) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+               JSONObject model = new JSONObject();
+               model.put("model_id", rs.getInt("model_id"));
+               model.put("model_cod", rs.getString("model_cod"));
+               model.put("name", rs.getString("name"));
+               model.put("thumbnail", rs.getString("thumbnail"));
+               models.put(model);
+            }
+         }
+
+      }
+      he.sendResponseHeaders(200, result.toString().getBytes().length);
+      os.write(result.toString().getBytes());
+   }
+
+   private byte[] generateGUID() {
+      byte[] bytes = new byte[16];
+      new Random().nextBytes(bytes);
+      //SecureRandom.getInstanceStrong().nextBytes(bytes);
+      return bytes;
+   }
+
+   private String guid2String(byte[] guid) {
+      StringBuilder sb = new StringBuilder();
+      for (byte b : guid) {
+         sb.append(String.format("%02X", b));
+      }
+
+      return sb.toString();
    }
 
 }

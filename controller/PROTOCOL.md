@@ -161,6 +161,25 @@ Lists all available models of device
 
     GET    /config/device/model      
 
+Response:
+
+    {
+      "models": [
+         {
+            "name": "Arduino MEGA 2560",
+            "model_id": 2,
+            "model_cod": "MEGA",
+            "thumbnail": "/images/arduino_mega.jpg"
+         },
+         {
+            "name": "Arduino NANO",
+            "model_id": 3,
+            "model_cod": "NANO",
+            "thumbnail": "/images/arduino_nano.jpg"
+         }
+      ]
+    }    
+
 ----
 ## Program
 ### List Programs
