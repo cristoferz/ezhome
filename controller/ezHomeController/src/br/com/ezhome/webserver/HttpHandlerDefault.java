@@ -15,7 +15,7 @@ import java.io.OutputStream;
 public class HttpHandlerDefault extends HttpHandlerAbstract {
 
    @Override
-   public void handle(HttpExchange he) throws IOException {
+   public void handleRequest(HttpExchange he) throws Exception {
       File folder = new File(ConfigFile.getInstance().getWebsiteFolder());
       if (!folder.exists()) {
          response(404, "Defined websiteFolder \"" + ConfigFile.getInstance().getWebsiteFolder() + "\" does not exists. Verify config.properties.", he);
@@ -24,7 +24,7 @@ public class HttpHandlerDefault extends HttpHandlerAbstract {
 
       try {
          File file = new File(folder, he.getRequestURI().getPath());
-         System.out.println(he.getRequestMethod() + " " + file.getAbsolutePath() + " " + file.length());
+         //System.out.println(he.getRequestMethod() + " " + file.getAbsolutePath() + " " + file.length());
 
          if (file.exists()) {
             if (file.isDirectory()) {
