@@ -38,7 +38,8 @@ Response:
                 "versionId": "0000000000000000",
                 "currentOwner": "self",
                 "portName": "/dev/ttyUSB0",
-                "runtimeId": "0123456789ABCDEFFEDCBA9876543210"
+                "runtimeId": "0123456789ABCDEFFEDCBA9876543210",
+                "deviceId": 1
             },
             {
                 "connected": false,
@@ -51,6 +52,12 @@ Response:
 Try to connect an ezHome device on port
 
     POST   /config/serialPort        
+
+    { "portName": "/dev/ttyUSB0" }
+
+Response:
+
+    { "success": true }
     
 ### Disconnect   
 Disconnect ezHome device on port, if available
