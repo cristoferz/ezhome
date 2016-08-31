@@ -108,34 +108,6 @@ public class DeviceManager {
       return connectors;
    }
 
-   public JSONObject jsonListPorts() {
-      JSONObject json = new JSONObject();
-      JSONArray devices = new JSONArray();
-      ArrayList<Device> connectors = listConnectedPorts();
-      for (Device connector : connectors) {
-         JSONObject device = new JSONObject();
-         device.put("name", connector.getName());
-         device.put("currentOwner", "self");
-         device.put("connected", true);
-         device.put("runtimeId", connector.getRuntimeId());
-         device.put("versionId", connector.getVersionId());
-         if (connector.getRegisteredDevice() != null) {
-            device.put("deviceId", connector.getRegisteredDevice().getDeviceId());
-         }
-         devices.put(device);
-      }
-      Enumeration<CommPortIdentifier> ports = listPorts();
-      while (ports.hasMoreElements()) {
-         CommPortIdentifier portIdentifier = ports.nextElement();
-         JSONObject device = new JSONObject();
-         device.put("name", portIdentifier.getName());
-         device.put("currentOwner", portIdentifier.getCurrentOwner());
-         device.put("connected", false);
-         devices.put(device);
-      }
-      json.put("devices", devices);
-      return json;
-   }
 
    private void readDevices() {
       try {
