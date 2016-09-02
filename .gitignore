@@ -4,3 +4,7 @@
 /controller/ezHomeController/build/
 /controller/ezHomeController/dist/
 /controller/ezHomeController/nbproject/private/
+/controller/ezHomeController/*.lck
+/release/build
+/local-site/node_modules
+/local-site/typings

@@ -5,10 +5,13 @@ import br.com.ezhome.device.program.instruction.Coil;
 import br.com.ezhome.device.program.instruction.FallingEdge;
 import br.com.ezhome.device.program.instruction.NC;
 import br.com.ezhome.device.program.instruction.NO;
+import br.com.ezhome.device.program.instruction.NumericValue;
 import br.com.ezhome.device.program.instruction.ParallelSeries;
 import br.com.ezhome.device.program.instruction.ProgramInstruction;
 import br.com.ezhome.device.program.instruction.RisingEdge;
 import br.com.ezhome.device.program.instruction.SetReset;
+import br.com.ezhome.device.program.instruction.TimerOff;
+import br.com.ezhome.device.program.instruction.TimerOn;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,8 +147,6 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
             break;
          }
       }
-      System.out.println(maxAddress);
-      System.out.println(perBool);
       this.bitsPerBoolAddress = perBool;
    }
 
@@ -257,6 +258,18 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          ParallelSeries parallel = new ParallelSeries(this);
          loadJSONSeries(json.getJSONArray("Parallel"), parallel);
          return parallel;
+      } else if (json.has("TimerOn")) {
+         return new TimerOn(this, 
+                 NumericValue.fromJSON(this, json.getJSONObject("TimerOn").getJSONObject("setpointValue")), 
+                 getAddress(json.getJSONObject("TimerOn").getInt("doneAddress")),
+                 getAddress(json.getJSONObject("TimerOn").getInt("elapsedAddress"))
+         );
+      } else if (json.has("TimerOff")) {
+         return new TimerOff(this, 
+                 NumericValue.fromJSON(this, json.getJSONObject("TimerOff").getJSONObject("setpointValue")), 
+                 getAddress(json.getJSONObject("TimerOff").getInt("doneAddress")),
+                 getAddress(json.getJSONObject("TimerOff").getInt("elapsedAddress"))
+         );
       } else {
          throw new Exception("Nenhuma instrução valida");
       }

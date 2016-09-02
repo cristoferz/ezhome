@@ -172,7 +172,6 @@ public class Device {
       if ((type & INTERNAL_ADDRESS) == INTERNAL_ADDRESS) {
          portState.setInternalAddress(true);
       }
-      System.out.println("read "+type);
       // Register Event for remote sync
       DeviceManager.getInstance().registerEvent(new DevicePortStateEvent(this, portState));
    }

@@ -1,6 +1,11 @@
 package br.com.ezhome.webserver;
 
 import br.com.ezhome.Controller;
+import br.com.ezhome.webserver.context.HttpHandlerActivation;
+import br.com.ezhome.webserver.context.HttpHandlerConfigDevice;
+import br.com.ezhome.webserver.context.HttpHandlerConfigDeviceProgram;
+import br.com.ezhome.webserver.context.HttpHandlerConfigSerialPort;
+import br.com.ezhome.webserver.context.HttpHandlerLogin;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -42,21 +47,13 @@ public class WebServer {
       httpServer = HttpServer.create(new InetSocketAddress(port), 0);
       //httpServer.setExecutor(null);
       httpServer.createContext("/", new HttpHandlerDefault());
-      httpServer.createContext("/status", new HttpHandler() {
-
-         @Override
-         public void handle(HttpExchange he) throws IOException {
-            System.out.println("teste");
-            
-            he.sendResponseHeaders(200, 0);
-            BufferedReader r = new BufferedReader(new InputStreamReader(he.getRequestBody()));
-            String line;
-            while((line = r.readLine()) != null) {
-               System.out.println(line);
-            }
-            he.getResponseBody().close();
-         }
-      });
+      
+      httpServer.createContext("/activation", new HttpHandlerActivation());
+      httpServer.createContext("/login", new HttpHandlerLogin());
+      httpServer.createContext("/config/serialPort", new HttpHandlerConfigSerialPort());
+      httpServer.createContext("/config/device", new HttpHandlerConfigDevice());
+      httpServer.createContext("/config/device/program", new HttpHandlerConfigDeviceProgram());
+      
       httpServer.createContext("/device/", new HttpHandlerDevice());
       httpServer.start();
    }
