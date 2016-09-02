@@ -49,7 +49,6 @@ public class PortReader extends Thread {
                if (line == null) {
                   break;
                }
-
                fireLineReceived(line);
                if (END_OF_MESSAGE.equals(line)) {
                   fireMessageReceived(stringBuilder.toString());

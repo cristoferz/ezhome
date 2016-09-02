@@ -45,10 +45,6 @@ public class DatabaseInitializerTest {
    public void tearDown() {
    }
 
-   @Test
-   public void testRepair() {
-      
-   }
    /**
     * Test of getConnection method, of class DatabaseInitializer.
     */

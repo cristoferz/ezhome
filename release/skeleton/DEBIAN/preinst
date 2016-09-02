@@ -1,0 +1,4 @@
+if [ -x /etc/init.d/ezhome ]
+then
+   service ezhome stop
+fi
