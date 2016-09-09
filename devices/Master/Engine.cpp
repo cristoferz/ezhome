@@ -82,10 +82,17 @@ void Engine::processProgram(boolean asPreScan) {
 
 byte Engine::processNextInstruction() { // returns instruction
   byte instruction = 0;
+
+  if(_instructionPointer-OPCODES_INDEX > _program->getProgramSize()) {
+    setError(ERROR_CODE_NEXT_INSTRUCTION_FAILED);
+    Serial.println("Exced program size");
+    _rungCondition = false;
+    return instruction;
+  }
   
   // start by getting 3 bits
   instruction = loadBitsIntoInstruction(instruction, 3);
-  
+
   switch(instruction) {
     case 0x00: // Coil
       coil();
@@ -180,12 +187,12 @@ byte Engine::processNextInstruction() { // returns instruction
   
   // if we get this far, then the only valid possibipality left is an end-of-program instruction
   instruction = loadBitsIntoInstruction(instruction, 1);
-  
+
   if(instruction == 0xFF) {
     _programDone = true;
     return instruction;
   }
-  
+
   setError(ERROR_CODE_NEXT_INSTRUCTION_FAILED);
   _rungCondition = false;
   return instruction;

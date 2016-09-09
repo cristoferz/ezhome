@@ -1,7 +1,9 @@
 package br.com.ezhome.device.program;
 
 import br.com.ezhome.device.Device;
+import br.com.ezhome.device.program.instruction.BooleanValue;
 import br.com.ezhome.device.program.instruction.Coil;
+import br.com.ezhome.device.program.instruction.Counter;
 import br.com.ezhome.device.program.instruction.FallingEdge;
 import br.com.ezhome.device.program.instruction.NC;
 import br.com.ezhome.device.program.instruction.NO;
@@ -269,6 +271,15 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
                  NumericValue.fromJSON(this, json.getJSONObject("TimerOff").getJSONObject("setpointValue")), 
                  getAddress(json.getJSONObject("TimerOff").getInt("doneAddress")),
                  getAddress(json.getJSONObject("TimerOff").getInt("elapsedAddress"))
+         );
+      } else if (json.has("Counter")) {
+         return new Counter(this, 
+                 json.getJSONObject("Counter").getBoolean("countDown"),
+                 NumericValue.fromJSON(this, json.getJSONObject("Counter").getJSONObject("setpointValue")), 
+                 BooleanValue.fromJSON(this, json.getJSONObject("Counter"), "resetValue"),
+                 getAddress(json.getJSONObject("Counter").getInt("doneAddress")),
+                 getAddress(json.getJSONObject("Counter").getInt("countAddress")),
+                 getAddress(json.getJSONObject("Counter").getInt("oneshotStateAddress"))
          );
       } else {
          throw new Exception("Nenhuma instrução valida");

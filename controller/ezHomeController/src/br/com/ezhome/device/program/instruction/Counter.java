@@ -17,7 +17,7 @@ public class Counter extends ProgramInstruction {
    private BooleanValue resetValue;
    private ProgramAddress doneAddress, countAddress, oneshotStateAddress;
 
-   public Counter(boolean countDown, NumericValue setpointValue, BooleanValue resetValue, ProgramAddress doneAddress, ProgramAddress countAddress, ProgramAddress oneshotStateAddress, ProgramBuilder builder) {
+   public Counter(ProgramBuilder builder, boolean countDown, NumericValue setpointValue, BooleanValue resetValue, ProgramAddress doneAddress, ProgramAddress countAddress, ProgramAddress oneshotStateAddress) {
       super(builder);
       this.countDown = countDown;
       this.setpointValue = setpointValue;
@@ -40,6 +40,7 @@ public class Counter extends ProgramInstruction {
    @Override
    public int getDataSize() {
       int size = 1;
+      size += getInstructionSize();
       size += setpointValue.getDataSize();
       size += resetValue.getDataSize();
       size += getBuilder().getBitsPerBoolAddress(); // Done
@@ -50,11 +51,12 @@ public class Counter extends ProgramInstruction {
 
    @Override
    public void appendBytes(ProgramSeriesBuilder builder) {
+      builder.getArrayBuilder().append(getInstructionCode(), getInstructionSize(), false, true);
       builder.getArrayBuilder().appendBit(countDown);
       setpointValue.appendBytes(builder);
       resetValue.appendBytes(builder);
       builder.getArrayBuilder().append(doneAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
-      builder.getArrayBuilder().append(countAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
+      builder.getArrayBuilder().append(countAddress.getAddress(), getBuilder().getBitsPerNumericAddress(), false, true);
       builder.getArrayBuilder().append(oneshotStateAddress.getAddress(), getBuilder().getBitsPerBoolAddress(), false, true);
    }
 
