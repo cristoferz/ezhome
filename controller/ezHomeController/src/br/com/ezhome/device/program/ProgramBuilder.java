@@ -233,17 +233,9 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
 
    private ProgramInstruction parseInstruction(JSONObject json) throws Exception {
       if (json.has("NO")) {
-         if (json.get("NO") instanceof Boolean) {
-            return new NO(this, json.getBoolean("NO"));
-         } else {
-            return new NO(this, getAddress(json.getInt("NO")));
-         }
+         return new NO(this, json);
       } else if (json.has("NC")) {
-         if (json.get("NC") instanceof Boolean) {
-            return new NC(this, json.getBoolean("NC"));
-         } else {
-            return new NC(this, getAddress(json.getInt("NC")));
-         }
+         return new NC(this, json);
       } else if (json.has("RisingEdge")) {
          return new RisingEdge(this, getAddress(json.getInt("RisingEdge")));
       } else if (json.has("FallingEdge")) {
