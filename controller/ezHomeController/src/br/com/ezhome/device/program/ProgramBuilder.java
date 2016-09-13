@@ -3,8 +3,10 @@ package br.com.ezhome.device.program;
 import br.com.ezhome.device.Device;
 import br.com.ezhome.device.program.instruction.BooleanValue;
 import br.com.ezhome.device.program.instruction.Coil;
+import br.com.ezhome.device.program.instruction.Comparator;
 import br.com.ezhome.device.program.instruction.Counter;
 import br.com.ezhome.device.program.instruction.FallingEdge;
+import br.com.ezhome.device.program.instruction.MathOperation;
 import br.com.ezhome.device.program.instruction.NC;
 import br.com.ezhome.device.program.instruction.NO;
 import br.com.ezhome.device.program.instruction.NumericValue;
@@ -273,8 +275,12 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
                  getAddress(json.getJSONObject("Counter").getInt("countAddress")),
                  getAddress(json.getJSONObject("Counter").getInt("oneshotStateAddress"))
          );
+      } else if (json.has("Comparator")) {
+         return new Comparator(this, json);
+      } else if (json.has("MathOperation")) {
+         return new MathOperation(this, json);
       } else {
-         throw new Exception("Nenhuma instrução valida");
+         throw new Exception("Nenhuma instrução valida em "+json.toString(2));
       }
    }
 
