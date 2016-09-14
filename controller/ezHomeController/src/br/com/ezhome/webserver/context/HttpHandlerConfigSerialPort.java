@@ -22,8 +22,7 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
 
    @Override
    public void handleRequest(HttpExchange he) throws Exception {
-      OutputStream os = he.getResponseBody();
-      try {
+      try (OutputStream os = he.getResponseBody()) {
          String path = he.getRequestURI().getPath();
          switch (path) {
             case "/config/serialPort":
@@ -74,8 +73,6 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
                os.write(result.getBytes());
                break;
          }
-      } finally {
-         os.close();
       }
    }
 
