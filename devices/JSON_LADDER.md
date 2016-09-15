@@ -46,61 +46,101 @@ Above is a basic example of implementation:
 
 It is composed by the following parts:
 
+## Flow tags
+Flow tags are the tags used to define the interactions between the instructions on ladder engine. They do not perform any tasks on devices outputs, but define the flow of rung conditions between instructions.
+
 ## Program
-The base of JSON Ladder. Is the first and unique node on JSON Ladder model.
+The base of JSON Ladder. Its used only once on a JSON Ladder program and just define the root of the logics. Its similar to the "parallel" instructions discussed later on purpose, but is the only tag that can be used on program root.
 
-## serie
-Represents the series of Ladder processing. 
+Contains an array of series to be executed by JSON Engine.
 
-## Parallel
-Represents a parallel logics on a single ladder serie.
+     { "program": [ 
+        { "serie": [ ... ] },
+        { "serie": [ ... ] }
+      ]}
+
+## Serie
+Represents a serie of instructions processed in a serial form on JSON Engine. 
+Its represented by an array of instructions to processed in a serial form, each one passing a *rungCondition* to the next one and using this value on its own logics.
+
+    { "serie": [
+       { ... },
+       { ... }
+    ]}
 
 ## Instructions
-Instructions are the interactions maded by Ladder logics.
+Unlike the flow tags, instructions are intended for interactions with memory addresses, device ports or simply to interact with rungCondition to the next instruction.
+
+Basically, every instruction receives a rungCondition and passes a new rungCondition to the next instruction. The simplest instructions are NO and NC, discussed later.
+
+### Contact NO and NC
+Contact NO and NC are the simplest instructions with input on a Ladder logics. As the ladder borns based on eletrical relays, they are representation of an eletrical switch.
+NO represents a "Normally Open" switch and NC represents a "Normally Closed" switch. So the only difference between then are the inverted results, so "NO = !NC" is a good representation. 
+
+On JSON Ladder, both contacts need an "interaction value", and this can be represented with a "boolean value".
+
+Boolean values can be a constant value, like "true" or "false" or a representing address. As on a device an memory address can represent a phisical port or just a memory address,
+Boolean Values can be used for phisical or memory interactions, allowing great flexibility to the instruction.
+
+The constant form of a boolean value is represented by a boolean value on JSON format, as following examples:
+
+    { "NO": true }
+    { "NC": false }
+
+Is not very logical to use constant values for contacts as the example, but boolean values are used for others purposes so its important to know that is possible.
+
+Other way to use the boolean values are assigning to then a memory address that can be a phisical port or just a memory value. This can be done by passing the integer value of desired address, like following:
+
+    { "NO": 0 }
+    { "NC": 108 }
+
+This assigns address 0 (normally phisical port 2) and 108 (just a memory address) to contacts.
+
+The main objective of contact instructions are they rungCondition result. They are always based on 2 values:
+* Incoming rungCondition: or the rungCondition that comes from prior instruction
+* Their input value: as represented by assigned address or constant value
+
+This way, we can represent the resulting rungCondition for NO as:
+
+    <Incoming rungCondition> && <Input value>
+
+And for NC as:
+
+    <Incoming rungCondition> && !<Input value>
+
+As you can see, the only difference is the invertion of the Input value. Incoming rungCondition always affect the resulting rungCondition the same way.
+
+
 
 ### Coil
-Represents an Output on Ladder logics. The rule is that a coil is not preceded by any other instruction, so comes in the end of a serie.
+Represents an Output on Ladder logics.
 
-Coil representation:
-      
-    ---(  )---|
+Basically, a Coil instruction reflects the incoming rungCondition on their Output Address, that can be a phisical output or memory value. The resulting rungCondition is exactly the same value as input rungCondition.
+Normally Coil is the final instruction for a serie, but its not mandatory.
 
-Coil on JSON Ladder:
+On JSON Ladder, Coil representation is like following:
 
     { "Coil": 1 }
 
-Coil on Java:
+As an coil always sets the value of their output destination, necessarily only one coil can be assigned to each address. This is not a restriction. If more than one coil are assigned to the same address, 
+the last one on the engine flow will override their value before it reflect a phisical response. Probabily an unexpected behavior.
 
-    new Coil(builder, getReservedAddress(builder, ++addressIndex))
+### Parallel
+Represents a *fork* on ladder logics, allowing parallel series to be executed and resulting *rungCondition* being united in an "or" logics.
 
-### NO/NC
-NO represents a "Normally Open" switch.
+    { "Parallel": [
+       { "serie": [ ... ] },
+       { "serie": [ ... ] }
+    ]} 
 
-NO representation:
+In a "program" tag, resulting rungCondition is just discarded and next serie is initialized with a "true" value, not affecting the next serie. 
+On a Parallel instruction, all inner series resulting rungCondition are combined on a "or logics" like the following:
 
-    ---[ ]---
+    serie1 | serie2 | serie3 | ...
 
-NO on JSON Ladder:
+Resulting rungCondition is passed to the next instruction on the outer serie. Is possible to use Parallel instructions on as many inner levels as necessary.       
 
-    { "NO": 1 }
-
-NO on Java:
-
-    new NO(builder, getReservedAddress(builder, ++addressIndex))        
-
-NC represents a "Normally Closed" switch. Basically are the inverted NO.
-
-NC representation:
-
-    ---[/]---
-
-NC on JSON Ladder:
-
-    { "NC": 1 }
-
-NC on Java:
-
-    new NC(builder, getReservedAddress(builder, ++addressIndex))
+Instructions are the interactions maded by Ladder logics.
 
 ### Edges
 Detects an edge on signal by the preceding logics. It detects an variation on signal from high to low (FallingEge) or low to high (RisingEdge), switching by only one cycle. No mather what signal is before an edge, the edges only pass a high signal just one cicle when the expected edge is detected, turning back to low signal.
