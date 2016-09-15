@@ -1,14 +1,21 @@
 package br.com.ezhome.device.program;
 
 import br.com.ezhome.device.Device;
+import br.com.ezhome.device.program.instruction.BooleanValue;
 import br.com.ezhome.device.program.instruction.Coil;
+import br.com.ezhome.device.program.instruction.Comparator;
+import br.com.ezhome.device.program.instruction.Counter;
 import br.com.ezhome.device.program.instruction.FallingEdge;
+import br.com.ezhome.device.program.instruction.MathOperation;
 import br.com.ezhome.device.program.instruction.NC;
 import br.com.ezhome.device.program.instruction.NO;
+import br.com.ezhome.device.program.instruction.NumericValue;
 import br.com.ezhome.device.program.instruction.ParallelSeries;
 import br.com.ezhome.device.program.instruction.ProgramInstruction;
 import br.com.ezhome.device.program.instruction.RisingEdge;
 import br.com.ezhome.device.program.instruction.SetReset;
+import br.com.ezhome.device.program.instruction.TimerOff;
+import br.com.ezhome.device.program.instruction.TimerOn;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,8 +151,6 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
             break;
          }
       }
-      System.out.println(maxAddress);
-      System.out.println(perBool);
       this.bitsPerBoolAddress = perBool;
    }
 
@@ -230,17 +235,9 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
 
    private ProgramInstruction parseInstruction(JSONObject json) throws Exception {
       if (json.has("NO")) {
-         if (json.get("NO") instanceof Boolean) {
-            return new NO(this, json.getBoolean("NO"));
-         } else {
-            return new NO(this, getAddress(json.getInt("NO")));
-         }
+         return new NO(this, json);
       } else if (json.has("NC")) {
-         if (json.get("NC") instanceof Boolean) {
-            return new NC(this, json.getBoolean("NC"));
-         } else {
-            return new NC(this, getAddress(json.getInt("NC")));
-         }
+         return new NC(this, json);
       } else if (json.has("RisingEdge")) {
          return new RisingEdge(this, getAddress(json.getInt("RisingEdge")));
       } else if (json.has("FallingEdge")) {
@@ -257,8 +254,33 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          ParallelSeries parallel = new ParallelSeries(this);
          loadJSONSeries(json.getJSONArray("Parallel"), parallel);
          return parallel;
+      } else if (json.has("TimerOn")) {
+         return new TimerOn(this, 
+                 NumericValue.fromJSON(this, json.getJSONObject("TimerOn").getJSONObject("setpointValue")), 
+                 getAddress(json.getJSONObject("TimerOn").getInt("doneAddress")),
+                 getAddress(json.getJSONObject("TimerOn").getInt("elapsedAddress"))
+         );
+      } else if (json.has("TimerOff")) {
+         return new TimerOff(this, 
+                 NumericValue.fromJSON(this, json.getJSONObject("TimerOff").getJSONObject("setpointValue")), 
+                 getAddress(json.getJSONObject("TimerOff").getInt("doneAddress")),
+                 getAddress(json.getJSONObject("TimerOff").getInt("elapsedAddress"))
+         );
+      } else if (json.has("Counter")) {
+         return new Counter(this, 
+                 json.getJSONObject("Counter").getBoolean("countDown"),
+                 NumericValue.fromJSON(this, json.getJSONObject("Counter").getJSONObject("setpointValue")), 
+                 BooleanValue.fromJSON(this, json.getJSONObject("Counter"), "resetValue"),
+                 getAddress(json.getJSONObject("Counter").getInt("doneAddress")),
+                 getAddress(json.getJSONObject("Counter").getInt("countAddress")),
+                 getAddress(json.getJSONObject("Counter").getInt("oneshotStateAddress"))
+         );
+      } else if (json.has("Comparator")) {
+         return new Comparator(this, json);
+      } else if (json.has("MathOperation")) {
+         return new MathOperation(this, json);
       } else {
-         throw new Exception("Nenhuma instrução valida");
+         throw new Exception("Nenhuma instrução valida em "+json.toString(2));
       }
    }
 

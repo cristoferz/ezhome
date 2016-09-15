@@ -26,6 +26,17 @@ public class NO extends ProgramInstruction {
       this.value = value;
    }
 
+   public NO(ProgramBuilder builder, JSONObject json) {
+      super(builder);
+      if (json.get("NO") instanceof Boolean) {
+         this.constant = true;
+         this.value = json.getBoolean("NO");
+      } else {
+         this.constant = false;
+         this.address = builder.getAddress(json.getInt("NO"));
+      }
+   }
+
    public boolean isConstant() {
       return constant;
    }

@@ -25,6 +25,17 @@ public class NC extends ProgramInstruction {
       this.constant = true;
       this.value = value;
    }
+   
+   public NC(ProgramBuilder builder, JSONObject json) {
+      super(builder);
+      if (json.get("NC") instanceof Boolean) {
+         this.constant = true;
+         this.value = json.getBoolean("NC");
+      } else {
+         this.constant = false;
+         this.address = builder.getAddress(json.getInt("NC"));
+      }
+   }
 
    public boolean isConstant() {
       return constant;
@@ -66,6 +77,18 @@ public class NC extends ProgramInstruction {
       JSONObject result = new JSONObject();
       result.put("NC", address.getAddress());
       return result;
+   }
+   
+   public static ProgramInstruction fromJSON(ProgramBuilder builder, JSONObject json) {
+      if (json.has("NO")) {
+         if (json.get("NO") instanceof Boolean) {
+            return new NO(builder, json.getBoolean("NO"));
+         } else {
+            return new NO(builder, builder.getAddress(json.getInt("NO")));
+         }
+      } else {
+         return null;
+      }
    }
 
 }

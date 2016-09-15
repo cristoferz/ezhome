@@ -63,12 +63,12 @@ public class ByteArrayBuilder {
    
    public void append(int value, int size, boolean fromLeft, boolean leftToRight) {
       for (int i = 0; i < size; i++) {
-         byte mask = 0;
+         int mask = 0;
          if (leftToRight) {
             if (fromLeft) {
-               mask = (byte) (1 << 31);
+               mask = (1 << 31);
             } else {
-               mask = (byte) (1 << (size - 1));
+               mask = (1 << (size - 1));
             }
          } else {
             mask = 1;
@@ -76,9 +76,9 @@ public class ByteArrayBuilder {
          boolean bitValue = (value & mask) != 0;
          appendBit(bitValue);
          if (leftToRight) {
-            value = (byte) (value << 1);
+            value = (value << 1);
          } else {
-            value = (byte) (value >> 1);
+            value = (value >> 1);
          }
       }
    }
@@ -129,8 +129,10 @@ public class ByteArrayBuilder {
    
    public byte[] getBytes() {
       byte[] result = new byte[bytes.size()];
+//      System.out.println("Bytes: ");
       for (int i = 0; i < bytes.size(); i++) {
          result[i] = bytes.get(i);
+//         System.out.print("|"+byteToBinaryString(result[i]));
       }
       return result;
    }

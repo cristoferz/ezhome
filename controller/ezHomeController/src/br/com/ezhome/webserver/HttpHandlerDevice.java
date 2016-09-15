@@ -6,15 +6,10 @@ import br.com.ezhome.device.DeviceManager;
 import br.com.ezhome.device.model.DeviceModels;
 import br.com.ezhome.device.program.ProgramBuilder;
 import com.sun.net.httpserver.HttpExchange;
-import gnu.io.CommPortIdentifier;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 /**
  *
@@ -23,7 +18,7 @@ import org.json.JSONTokener;
 public class HttpHandlerDevice extends HttpHandlerAbstract {
 
    @Override
-   public void handle(HttpExchange exchange) throws IOException {
+   public void handleRequest(HttpExchange exchange) throws IOException {
       //
       //System.out.println("data: "+data.toString());
       OutputStream os = exchange.getResponseBody();
@@ -32,69 +27,6 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
          String path = exchange.getRequestURI().getPath();
 
          switch (path) {
-            case "/device/list":
-               if (exchange.getRequestMethod().equals("GET")) {
-                  exchange.getResponseHeaders().add("Content-type", "application/json");
-                  JSONObject json = DeviceManager.getInstance().jsonListPorts();
-                  byte[] response = json.toString().getBytes();
-                  exchange.sendResponseHeaders(200, response.length);
-                  os.write(response);
-
-               } else {
-                  throw new Exception("Invalid method: " + exchange.getRequestMethod());
-               }
-               break;
-            case "/device/connect":
-               switch (exchange.getRequestMethod()) {
-                  case "POST":
-                     exchange.getResponseHeaders().add("Content-type", "application/json");
-                     JSONObject json = new JSONObject();
-                     try {
-                        DeviceManager.getInstance().connect(getJSONRequest(exchange).getString("portName"));
-                        json.put("success", true);
-                        exchange.sendResponseHeaders(200, json.toString().getBytes().length);
-                     } catch (Exception ex) {
-                        json.put("success", false);
-                        json.put("message", ex.getMessage());
-                        json.put("exception", ex);
-                        exchange.sendResponseHeaders(500, json.toString().getBytes().length);
-                     }
-                     os.write(json.toString().getBytes());
-                     break;
-                  default:
-                     throw new Exception("Invalid method: " + exchange.getRequestMethod());
-               }
-               break;
-            case "/device/disconnect":
-               switch (exchange.getRequestMethod()) {
-                  case "POST":
-                     exchange.getResponseHeaders().add("Content-type", "application/json");
-                     // Desconecta do arduino
-                     JSONObject json = new JSONObject();
-                     JSONObject parameters = getJSONRequest(exchange);
-                     Device connector = DeviceManager.getInstance().get(parameters.getString("portName"));
-                     if (connector == null) {
-                        json.put("success", false);
-                        json.put("message", "Device " + parameters.getString("portName") + " is not connected.");
-                        exchange.sendResponseHeaders(500, json.toString().getBytes().length);
-                     } else {
-                        connector.close();
-                        json.put("success", true);
-                        exchange.sendResponseHeaders(200, json.toString().getBytes().length);
-                     }
-                     os.write(json.toString().getBytes());
-                     break;
-                  default:
-                     throw new Exception("Invalid method: " + exchange.getRequestMethod());
-               }
-
-//         } else if (path.equals("/device/firmwareWrite")) {
-//            // Grava o firmware no arduino
-//         } else if (path.equals("/device/upload")) {
-//            // Faz o carregamento do programa para o arduino
-//         } else if (path.equals("/device/scan")) {
-//            // Faz um scan de portas do arduino
-               break;
             case "/device/upload":
                switch (exchange.getRequestMethod()) {
                   case "POST":
@@ -178,15 +110,15 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                      throw new Exception("Invalid method: " + exchange.getRequestMethod());
                }
                break;
-            case "/device/states":
+            case "/device/states": 
                switch (exchange.getRequestMethod()) {
                   case "POST":
                      exchange.getResponseHeaders().add("Content-type", "application/json");
                      JSONObject data = getJSONRequest(exchange);
-                     Device connector = DeviceManager.getInstance().connect(data.getString("portName"));
+                     Device connector2 = DeviceManager.getInstance().connect(data.getString("portName"));
                      //exchange.getResponseHeaders().add(, "application/json");
-                     exchange.sendResponseHeaders(200, connector.getPortStates().toString().getBytes().length);
-                     os.write(connector.getPortStates().toString().getBytes());
+                     exchange.sendResponseHeaders(200, connector2.getPortStates().toString().getBytes().length);
+                     os.write(connector2.getPortStates().toString().getBytes());
                      break;
                   default:
                      throw new Exception("Invalid method: " + exchange.getRequestMethod());

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Adjusting permissions on executable
+chmod 755 /opt/ezhome/ezhome.sh
+
+# Adjusting service
+chmod 755 /etc/init.d/ezhome
+update-rc.d ezhome defaults 97 03
+
+service ezhome start
