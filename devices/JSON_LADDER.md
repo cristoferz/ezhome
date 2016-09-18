@@ -122,53 +122,134 @@ On JSON Ladder, Coil representation is like following:
 
     { "Coil": 1 }
 
-As an coil always sets the value of their output destination, necessarily only one coil can be assigned to each address. This is not a restriction. If more than one coil are assigned to the same address, 
-the last one on the engine flow will override their value before it reflect a phisical response. Probabily an unexpected behavior.
+As an coil always sets the value of their output destination, necessarily only one coil can be 
+assigned to each address. This is not a restriction. If more than one coil are assigned to the 
+same address, the last one on the engine flow will override their value before it reflect a 
+phisical response. Probabily an unexpected behavior.
 
 ### Parallel
-Represents a *fork* on ladder logics, allowing parallel series to be executed and resulting *rungCondition* being united in an "or" logics.
+Parallel is a instruction, but can also be seen as an flow tag. 
+It represents a *fork* on ladder logics, allowing parallel series to be executed inside a serie
+and resulting *rungCondition* being united in an "or" logics.
 
     { "Parallel": [
        { "serie": [ ... ] },
        { "serie": [ ... ] }
     ]} 
 
-In a "program" tag, resulting rungCondition is just discarded and next serie is initialized with a "true" value, not affecting the next serie. 
-On a Parallel instruction, all inner series resulting rungCondition are combined on a "or logics" like the following:
+In a "program" tag, resulting rungCondition is just discarded and next serie is initialized
+with a "true" value, not affecting the next serie. On a Parallel instruction, all inner 
+series resulting rungCondition are combined on a "or logics" like the following:
 
     serie1 | serie2 | serie3 | ...
 
-Resulting rungCondition is passed to the next instruction on the outer serie. Is possible to use Parallel instructions on as many inner levels as necessary.       
+Resulting rungCondition is passed to the next instruction on the outer serie. Following is an example of 2 Contact NO interacting with 1 Coil, using a parallel:
 
-Instructions are the interactions maded by Ladder logics.
+    { "serie": [
+       { "Parallel": [
+          { "serie": [
+             { "NO": 1 }
+          ]},
+          { "serie": [
+             { "NO": 2 }
+          ]}
+       ] },
+       { "Coil": 3 }
+    } 
+
+In this example, any of the NO that have an high level, will put a high level on the Coil. 
+This is because the "OR" logics of the Parallel instruction.
+
+The series on the Parallel are the same as the series on a Program, so its possible to do anything on then, as incluing Parallel inside another Parallel. 
+Is possible to use Parallel instructions on as many inner levels as necessary.       
 
 ### Edges
-Detects an edge on signal by the preceding logics. It detects an variation on signal from high to low (FallingEge) or low to high (RisingEdge), switching by only one cycle. No mather what signal is before an edge, the edges only pass a high signal just one cicle when the expected edge is detected, turning back to low signal.
+The edge type of instructions are the type of instruction that detects an edge on signal 
+represented by rungCondition. There are 2 types of edges: Rising and Falling. They detect an 
+variation on signal from high to low (FallingEge) or low to high (RisingEdge). 
 
-An address has to be associated with an edge. It is responsible for the control of edge detection across the cycles of the controller.
+The effect of such variation is a "true" value on preceding rungCondition for just on engine cycle. This is 
+different from NO and NC contacts. They keep the value for as long as the signal is high or low. The edges 
+just but a high level to represent the variation of the signal an just for one cycle. 
+No mather what signal is before an edge, the edges only pass a high signal just one cicle when 
+the expected edge is detected, turning back to low signal.
 
-FallingEdge representation:
+The edges have no directly output. They unique purpose is to set the preceding rungCondition as the edge is detected. 
+So, they will never appear alone in a serie. There is no restriction to this, but its meaningless to do this.
 
-    -----[-_]-----
+The edges needs, for their internal logics, a boolean memory address. In this case, the memory address cannot be a
+phisical port from device. There is no restriction to do this, but this will cause an unexpected behavior, as the port 
+will interact with the internal address of the edge. The purpose of this address is to "save" the "old state" of signal
+across engine cycles. This is necessary because the edge always compares the current state with the "old state", and this 
+have to be saved across engine cycles.
 
-FallingEdge on JSON Ladder:
+With this is mind, there is no use for the edge address except for the edge itself.
 
-    { "FallingEdge": 1 }
+Examples of both edge representation are the following:
 
-FallingEdge on Java:
+    { "FallingEdge": 100 }
+    { "RisingEdge": 101 }
 
-    new FallingEdge(builder, getReservedAddress(builder, ++addressIndex))
-    
-RisingEdge representation:
+A practical example is explore after we understand the SetReset instruction.
 
-    -----[_-]-----
+### SetReset
+SetReset instruction are maded for, as the name says, set or reset the value of a memory address
+of device. We can understand set as put "true" on this address and reset as put "false" on this 
+address. Its a single instruction because its possible to define their state at runtime, inverting 
+their result.
 
-RisingEdge on JSON Ladder:
+This instruction easily work in conjuction with edges, but there is no restriction to the use with others 
+instructions. This instruction take 2 parameters:
+* address: The output address. That the address that will be set or reset;
+* reset: A boolean value that represents if the instruction will set or reset the output;
 
-    { "RisingEdge": 1 }    
+As the reset parameter is a boolean value, it can be a constant value (true or false) or a memory address
+containing the expected behavior. 
 
-RisingEdge on Java:
+An example of usage is as following:
 
-    new RisingEdge(builder, getReservedAddress(builder, ++addressIndex))
+    { "SetReset": {
+       "address": 0,
+       "reset": true
+    }}
 
-Ps.: *The address associated with the edges is used just for store the previous state of signal. Never could be used for other operations, with the risk of anomalous behaviors.*
+Or:
+
+   { "SetReset": {
+      "address": 0,
+      "reset": 100
+   }}    
+
+This represents the both forms of SetReset instruction. First one use the constant form, where the value
+of address 0 is always set to false when a rungCondition of true precedes the instuction. On the second form,
+the value of true or false depends on value of the memory address 100. The value of the address is inverted 
+accordingly to the name "reset" so, if the value of address is true (reset), the value setted is false and if
+the value is false (not reset), the value setted it true.
+
+A very useful case of use of the runtime reset value is a "auto reversing configuration". An example is as 
+following:
+
+    { "SetReset": {
+       "address": 0,
+       "reset": 0
+    }} 
+
+As the same address is used for both output and reset values, for every cycle that rungCondition is true the 
+value of address 0 is inverted, passing from true to false or false to true. This is very useful if combined 
+with an edge instruction, as the example above:
+
+    { "serie": [
+       { "NO": 1 },
+       { "FallingEdge": 100 },
+       { "SetReset": {
+          "address": 0,
+          "reset": 0
+       }}
+    ]} 
+
+Consider that a push button is connected to address 1 and a LED is connected to address 0. With this configuration
+for every click on the button, the light turn off or turn on and keeps this state until the next interaction with 
+the button.
+
+ 
+     
