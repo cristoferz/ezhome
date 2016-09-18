@@ -215,10 +215,10 @@ An example of usage is as following:
 
 Or:
 
-   { "SetReset": {
-      "address": 0,
-      "reset": 100
-   }}    
+    { "SetReset": {
+       "address": 0,
+       "reset": 100
+    }}    
 
 This represents the both forms of SetReset instruction. First one use the constant form, where the value
 of address 0 is always set to false when a rungCondition of true precedes the instuction. On the second form,
@@ -251,5 +251,155 @@ Consider that a push button is connected to address 1 and a LED is connected to 
 for every click on the button, the light turn off or turn on and keeps this state until the next interaction with 
 the button.
 
+### NumericValues
+At this point is necessary for complete understanding of the following instructions that we known a new structure:
+the NumericValues. Until now, we are using just boolean values, either constants or not, but never more than this.
+For the next instructions are necessary to understand that is possible to use NumericValues.
+
+NumericValues, as the same says, are basically numbers, but we have some differences on the address system. A numeric 
+address of value 18 is not the same address as a boolean address of value 18. This is because the address system for
+numeric values are completely isolated for boolean addresses. This happens because of natures of values and phisical
+ports of devices. Boolean address are linked to digital ports of device and Numeric address are linked to analog ports
+of device. As an example, lets take the Arduino MEGA 2560. They have 54 digital ports and 16 analog ports, that are 
+completely different ports. So, the boolean addresses from 0 to 52 (thats because ports 0 and 1 are useless) are linked
+to the digital ports. And, the numeric addresses from 0 to 15 are linked to analog ports. The preceding addresses are 
+just memory addresses, having no phisical interaction.
+
+NumericValue have 2 forms of representation:
+* Constant: having static value like above:
+
  
+    { "value": 200 }
+
+* Variable: assigned to a numeric memory address like above:
+
+
+    { "address": 18 }
+
+Once assigned to an analog port the value will reflect in the analog value for the port.
+
+### Timers
+Timers are the time based instructions for the JSON Ladder. The logics are based on 3 values, specified on definition:
+* setpointValue: specifies the time in milliseconds elapsed for a timer be considered done.
+* doneAddress: a boolean address that represents the done state for the timer.
+* elapsedAddress: a numeric address to store the elapsed time for the timer.
+
+With the same variables, a timer can be one of 2 types:
+* TimerOn 
+   
+   Every time the preceding rungCondition is true the timer start counting time, until achieve the setpointValue. During 
+   this time, doneAddress keeps a false value, elapsedAddress keep the time passed until the true condition and resulting
+   rungCondition return false. Once the setpointValue is achieved, doneAddress gains a true value and rungCondition returns 
+   true.
+
+* TimerOff
+
+   Every time the preceding rungCondition is true the timer start counting time, until achieve the setpointValue. During 
+   this time, doneAddress keeps a true value, elapsedAddress keep the time passed until the false condition and resulting
+   rungCondition return true. Once the setpointValue is achieved, doneAddress gains a false value and rungCondition returns 
+   false.
+
+If the running condition for the timer (true for TimerOn and false for TimerOff) changes, the timer resets immediatelly and 
+elapsedTime returns to zero. 
+
+An example of usage of TimerOn is as following:
+
+    { "serie": [
+       { "NO": 0 },
+       { "TimerOn": {
+          "setpointValue": 2000,
+          "doneAddress": 1,
+          "elapsedAddress": 18
+       }},
+       { "Coil": 2 }
+    ]}
      
+In this example, the contact NO commands the execution of Timer, as their control the preceding rungCondition. The Timer is 
+configured for a 2s delay (2000ms), with doneAddress configured for address 1 and elapsedAddress configured for numeric 
+address 18. A Coil assigned to address 2 is connected to the resulting rungCondition.
+
+The logic is interpreted as follows:
+Once the address 0 has a high value the timer will start running. During 2s the rungCondition reflects no alteration. 
+If during this time the address 0 goes to an low value, the timer resets and the output will never change. Otherwise, if 
+passes the 2 seconds and address 0 keeps the high value, then doneAddress will change to true and resulting rungCondition too. 
+This stays like this for as long as the address 0 keeps the high value. Once the change to low value, immediatelly doneAddress 
+and resulting rungCondition goes low too, no delay is applied this way.
+
+TimerOff have a similar aproach, but with inverted values. Timer starts with a low value and reset with a high value.
+
+Some considerations about parameters of timers:
+* setpointValue can use both constants and variable values. A change during the timer execution will affect the result of timer 
+without reseting him.
+* doneAddress and resulting rungCondition always have the same value. Because of internal logics of the timer is necessary to 
+specify an address, but is not necessary to use him.
+* elapsedAddress can be used for reading, but take care with writings. A write on this address can cause unexpected behaviors. 
+A mistake easy to take is try to use an address of an analog port. This will cause very strange results, and dificulty to find 
+the problem. That because every cycle of engine will override the value if the analog value of the phisical port, and or the 
+timer never ends, or ends very fast, depending on values of setpointValue. Anyway, of course this will not be the expected result.
+
+### Counters
+Counters are the most complex structures for now. Counters are instructions that uses the preceding rungCondition edge for autoincrement 
+or autodecrement their values, according to their type (either count up or down). Their basic implementation is examplified above:
+
+    { "Counter": {
+       "countDown": false,
+       "setpointValue": {
+          "value": 10
+       },
+       "resetValue": 100,
+       "doneAddress": 101,
+       "countAddress": 18,
+       "oneshotStateAddress": 102
+    }} 
+
+With this basics, this are the explanations about all the parameters:
+* countDown: sets the timer as a count up or down. Its always a constant value so, its not possible to change at runtime.
+* setpointValue: defines the value that the counter is considered "done". Explanations about what is "done" are maded above.
+* resetValue: defines the boolean value that resets the counter. Can be a constant or variable
+* doneAddress: boolean address that identify a counter as done. Similar to Timers this also reflects the resulting rungCondition
+* countAddress: numeric address that stores the current count value.
+* oneshotStateAddress: as the counters act like an edge, this is the address for the internal edge control
+
+One simple explanation for counters is that they are an edge with a math add operation. But they do a little more than this. They 
+controls a setpointValue, doneAddress and a reset operation in only one instruction. Lets explain this by parts. First of all the 
+doneAddress and rungCondition. For our first example we have a count up counter (countDown: false), with a setpoint of 10. Lets put 
+more instructions to be more clear:
+
+    { "serie": [
+       { "NO": 0 },
+       { "Counter": {
+          "countDown": false,
+          "setpointValue": {
+             "value": 10
+          },
+          "resetValue": 100,
+          "doneAddress": 101,
+          "countAddress": 18,
+          "oneshotStateAddress": 102
+       }},
+       { "Coil": 1 }
+    ]}  
+
+In this example lets think we have a push button on address 0 and a LED on address 1.
+
+At the start of program, we have the LED turn off, and the counter at 0. So, if we click 5 times on the button, nothing realy 
+happens, just the internal counter goes to 5 and the LED still off. If click more 5 times, than the counter goes to 10 and 
+setpointValue is hit so the rungCondition goes to true together with doneAddress and finally the LED turn on.
+
+If at any time you read the countAddress you will have the counter value, so now we have the value of 10.
+
+But, our LED is now turn on and there is no way to turn it off. That because differently from timers, counters do not 
+autoreset at any condition. The only way to autoreset a counter is will a pulse on resetValue. If you keep the resetValue 
+constantly on true, the counter will reset every cycle and never autoincrement their values.
+
+If will implement another serie with the example above, together with our first example, will can reset your counter:
+
+    { "serie": [
+       { "NO": 2 },
+       { "Coil": 100 }
+    ]}
+
+With a button connected to address 2, a click on it will reset the counter. If you keep the button pushed, the counter
+never increment.
+
+    
