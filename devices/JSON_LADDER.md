@@ -399,7 +399,106 @@ If will implement another serie with the example above, together with our first 
        { "Coil": 100 }
     ]}
 
-With a button connected to address 2, a click on it will reset the counter. If you keep the button pushed, the counter
-never increment.
+With a button connected to address 2, a click on it will reset the counter. while you keep the button pushed, the counter
+never increment, they keep reseting.
 
-    
+### Math Operators
+The counters are very useful for lots of situations, but their use is very specific as a counter. 
+Sometimes is necessary to make some math operations with values. For this kind of situations there is the "MathOperation"
+instruction. There 5 kind of math operations implemented by this instruction, they are (with their representation):
+* ADD: +
+* SUBTRACT: -
+* MULTIPLY: *
+* DIVIDE: /
+* CHOOSE: #
+
+They are self explanatory with the exception of the CHOOSE one. They are bettter explained above.
+
+An example of MathOperation follows:
+
+    { "MathOperation": {
+       "type": "*",
+       "operator1": {
+          "address": 0
+       },
+       "operator2": {
+          "value": 2
+       },
+       "resultAddress": {
+          "address": 18
+       }
+    }}
+
+This example shows a MathOperation with the MULTIPLY type. The result is that the value read from address 0, on operator1, 
+is multiplied by 2, as the operator2 and the result is stored on numeric address 18. So the parameters explanation follows:
+
+* type: the operator for the math operation. Can be one of: +,-,*,/,#
+* operator1: a NumericValue for the first operator
+* operator2: a NumericValue for the second operator
+* resultAddress: a NumericAddress to store the operation result.
+
+Math operations can use analog inputs, counters variables, timers elapsedAddress or any others numeric values as their 
+operators. Is possible to use the same address on operators and resultAddress at the same instruction. One example is an
+autoincrement on a numeric address, as follows:
+
+    { "MathOperation": {
+       "type": "+",
+       "operator1": {
+          "address": 18
+       },
+       "operator2": {
+          "value": 1
+       },
+       "resultAddress": {
+          "address": 18
+       }
+    }} 
+
+This instruction will increment on the numeric value of address 18 every time the preceding rungCondition is true. 
+But take care. The operation is done every cycle that the rungCondition is true, so if you put a NO contact before and
+the user clicks the button, lots of cycle will passes during the high value of the button, incrementing the value lots 
+of times. To prevent this, its common to use edges before the MathOperation, asuring that only one cycle will perform 
+the operation per click.
+
+A not self explanatory MathOperation is the CHOOSE type. But is a very simple one. Basically they choose the value to 
+put on resulting address based on preceding rungCondition. If the rungCondition is false, then the operator1 value is 
+putted on resultAddress, if true the value of operator2 is putted. Is a little different from the others because a edge 
+will not serve well as a preceding instruction in most cases. 
+
+The last thing to consider is the resulting rungCondition. They are not affected by MathOperation. So, if the preceding 
+rungCondition is true, the resulting will be true and vice versa.
+
+### Math Comparators
+Math comparators are the "if" on Ladder logics for numeric values. Their objective is just affect the resulting 
+rungCondition, not altering any memory address. An example of usage follows:
+
+    { "Comparator": {
+       "type": ">=",
+       "value1": {
+          "address": 0
+       },
+       "value2": {
+          "value": 2
+       }
+    }}
+
+Their parameter explanation follows:
+* type: type of comparation. Can be one of: ==,>,>=,<,<=,!=
+* value1: first value of comparation
+* value2: second value of comparation
+
+The type are all self explanatory and the logics can be read as follows:
+
+    rungCondition = rungCondition && (value1 <type> value2)
+
+Or as the example before:
+
+    rungCondition = rungCondition && ([address 0] >= 2)
+
+As you can see the operation always depends on preceding rungCondition. If they are false, the result is false and 
+the instruction is not even processed. Otherwise, is processed and the result is the new rungCondition.
+
+The example show a comparation of type >= of the value readed from address 0 (probabily an analog port) between the 
+constant 2. If the value of the port is greater or equals 2, the resulting rungCondition will be true, otherwise false
+respecting the preceding rungCondition too.
+
