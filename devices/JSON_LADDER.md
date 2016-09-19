@@ -274,7 +274,7 @@ NumericValue have 2 forms of representation:
 * Variable: assigned to a numeric memory address like above:
 
 
-    { "address": 18 }
+     { "address": 18 }
 
 Once assigned to an analog port the value will reflect in the analog value for the port.
 
@@ -470,7 +470,7 @@ rungCondition is true, the resulting will be true and vice versa.
 
 ### Math Comparators
 Math comparators are the "if" on Ladder logics for numeric values. Their objective is just affect the resulting 
-rungCondition, not altering any memory address. An example of usage follows:
+rungCondition, not altering any memory addresses. An example of usage follows:
 
     { "Comparator": {
        "type": ">=",
