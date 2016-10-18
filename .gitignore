@@ -8,3 +8,7 @@
 /release/build
 /local-site/node_modules
 /local-site/typings
+/controller/ezHomeLib/nbproject/private/
+/controller/ezHomeLib/dist/
+/controller/ezHomeStandardLib/nbproject/private/
+/controller/ezHomeStandardLib/dist/

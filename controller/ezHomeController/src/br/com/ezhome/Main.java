@@ -1,7 +1,7 @@
 package br.com.ezhome;
 
 import br.com.ezhome.device.TwoWaySerialComm;
-import br.com.ezhome.device.program.ProgramBuilder;
+import br.com.ezhome.lib.program.ProgramBuilder;
 import java.io.IOException;
 
 /**

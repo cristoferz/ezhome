@@ -1,6 +1,6 @@
 package br.com.ezhome.device.event;
 
-import br.com.ezhome.device.Device;
+import br.com.ezhome.device.DeviceImpl;
 import br.com.ezhome.device.RegisteredDevice;
 import org.json.JSONObject;
 
@@ -10,9 +10,9 @@ import org.json.JSONObject;
  */
 public class DevicePortStateEvent extends DeviceEvent {
 
-   private final Device.PortState portState;
+   private final DeviceImpl.PortState portState;
 
-   public DevicePortStateEvent(Device device, Device.PortState portState) {
+   public DevicePortStateEvent(DeviceImpl device, DeviceImpl.PortState portState) {
       super(device);
       this.portState = portState;
    }

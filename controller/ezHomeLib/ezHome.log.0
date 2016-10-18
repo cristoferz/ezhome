@@ -1,0 +1,10 @@
+out 17, 2016 11:50:36 PM br.com.ezhome.lib.logger.EzHomeLogger <init>
+INFO: Logger initialized
+out 17, 2016 11:50:36 PM br.com.ezhome.lib.LibManager loadJar
+INFO: Installing Jar: /home/cristofer/git/ezhome/controller/ezHomeStandardLib/dist/ezHomeStandardLib.jar
+out 17, 2016 11:50:36 PM br.com.ezhome.lib.LibManager loadJar
+INFO: Register class: br.com.ezhome.standard.StandardLibRegister
+out 17, 2016 11:50:36 PM br.com.ezhome.lib.LibManager registerModule
+INFO: - Switch Module: br.com.ezhome.standard.SwitchModule
+out 17, 2016 11:50:36 PM br.com.ezhome.lib.LibManager registerModule
+INFO: - Alarm Central Module: br.com.ezhome.standard.AlarmCentralModule

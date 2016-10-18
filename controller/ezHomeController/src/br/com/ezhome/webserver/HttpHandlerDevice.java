@@ -1,10 +1,10 @@
 package br.com.ezhome.webserver;
 
 import br.com.ezhome.device.FirmwareUploader;
-import br.com.ezhome.device.Device;
+import br.com.ezhome.device.DeviceImpl;
 import br.com.ezhome.device.DeviceManager;
 import br.com.ezhome.device.model.DeviceModels;
-import br.com.ezhome.device.program.ProgramBuilder;
+import br.com.ezhome.lib.program.ProgramBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,7 +34,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                      JSONObject json = new JSONObject();
                      JSONObject parameters = getJSONRequest(exchange);
                      // disconnect before upload
-                     Device connector = DeviceManager.getInstance().get(parameters.getString("portName"));
+                     DeviceImpl connector = DeviceManager.getInstance().get(parameters.getString("portName"));
                      if (connector != null) {
                         connector.close();
                      }
@@ -78,7 +78,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                   case "POST":
                      exchange.getResponseHeaders().add("Content-type", "application/json");
                      JSONObject parameters = getJSONRequest(exchange);
-                     Device connector = DeviceManager.getInstance().connect(parameters.getString("portName"));
+                     DeviceImpl connector = DeviceManager.getInstance().connect(parameters.getString("portName"));
                      String result = connector.sendCommand(parameters.getString("command"));
                      JSONObject json = new JSONObject();
                      json.put("success", true);
@@ -94,7 +94,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                switch (exchange.getRequestMethod()) {
                   case "POST":
                      HashMap<String, String> postParameters = getPostParameters(exchange);
-                     Device connector = DeviceManager.getInstance().connect(postParameters.get("device"));
+                     DeviceImpl connector = DeviceManager.getInstance().connect(postParameters.get("device"));
                      String program = postParameters.get("program");
                      JSONObject obj = new JSONObject(program);
                      ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
@@ -115,7 +115,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                   case "POST":
                      exchange.getResponseHeaders().add("Content-type", "application/json");
                      JSONObject data = getJSONRequest(exchange);
-                     Device connector2 = DeviceManager.getInstance().connect(data.getString("portName"));
+                     DeviceImpl connector2 = DeviceManager.getInstance().connect(data.getString("portName"));
                      //exchange.getResponseHeaders().add(, "application/json");
                      exchange.sendResponseHeaders(200, connector2.getPortStates().toString().getBytes().length);
                      os.write(connector2.getPortStates().toString().getBytes());

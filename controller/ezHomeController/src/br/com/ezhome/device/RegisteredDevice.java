@@ -13,7 +13,7 @@ public class RegisteredDevice {
 
    private String port;
 
-   private Device connector;
+   private DeviceImpl connector;
 
    public RegisteredDevice() {
       this.deviceId = -1;
@@ -59,11 +59,11 @@ public class RegisteredDevice {
       this.port = port;
    }
 
-   public Device getConnector() {
+   public DeviceImpl getConnector() {
       return connector;
    }
 
-   public void setConnector(Device connector) {
+   public void setConnector(DeviceImpl connector) {
       this.connector = connector;
       if (connector != null) {
          setRuntimeId(connector.getRuntimeId());
@@ -72,7 +72,7 @@ public class RegisteredDevice {
             connector.setRegisteredDevice(this);
          }
       } else {
-         setRuntimeId(Device.BLANK_GUID);
+         setRuntimeId(DeviceImpl.BLANK_GUID);
          setPort(null);
       }
 
