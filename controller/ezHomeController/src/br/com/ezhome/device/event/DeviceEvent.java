@@ -1,6 +1,6 @@
 package br.com.ezhome.device.event;
 
-import br.com.ezhome.device.Device;
+import br.com.ezhome.device.DeviceImpl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -13,19 +13,19 @@ import org.json.JSONObject;
  */
 public abstract class DeviceEvent {
 
-   private Device device;
+   private DeviceImpl device;
    private Date date;
 
-   public DeviceEvent(Device device) {
+   public DeviceEvent(DeviceImpl device) {
       this.device = device;
       this.date = new Date();
    }
 
-   public Device getDevice() {
+   public DeviceImpl getDevice() {
       return device;
    }
 
-   public void setDevice(Device device) {
+   public void setDevice(DeviceImpl device) {
       this.device = device;
    }
 

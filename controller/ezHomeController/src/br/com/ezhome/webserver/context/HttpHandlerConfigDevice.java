@@ -1,7 +1,7 @@
 package br.com.ezhome.webserver.context;
 
 import br.com.ezhome.database.DatabaseConnector;
-import br.com.ezhome.device.Device;
+import br.com.ezhome.device.DeviceImpl;
 import br.com.ezhome.device.DeviceManager;
 import br.com.ezhome.device.FirmwareUploader;
 import br.com.ezhome.webserver.HttpHandlerAbstract;
@@ -259,7 +259,7 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
    private void sendCommand(HttpExchange he, OutputStream os) throws Exception {
       he.getResponseHeaders().add("Content-type", "application/json");
       JSONObject parameters = getJSONRequest(he);
-      Device connector = DeviceManager.getInstance().connect(parameters.getString("portName"));
+      DeviceImpl connector = DeviceManager.getInstance().connect(parameters.getString("portName"));
       String result = connector.sendCommand(parameters.getString("command"));
       JSONObject json = new JSONObject();
       json.put("success", true);
@@ -275,7 +275,7 @@ public class HttpHandlerConfigDevice extends HttpHandlerJWTAbstract {
       JSONObject json = new JSONObject();
       JSONObject parameters = getJSONRequest(he);
       // disconnect before upload
-      Device connector = DeviceManager.getInstance().get(parameters.getString("portName"));
+      DeviceImpl connector = DeviceManager.getInstance().get(parameters.getString("portName"));
       if (connector != null) {
          connector.close();
       }

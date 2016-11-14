@@ -1,6 +1,6 @@
 package br.com.ezhome.database;
 
-import br.com.ezhome.config.ConfigFile;
+import br.com.ezhome.lib.config.ConfigFile;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;

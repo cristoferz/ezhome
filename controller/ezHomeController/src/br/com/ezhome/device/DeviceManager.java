@@ -28,7 +28,7 @@ public class DeviceManager {
 
    private static DeviceManager instance;
 
-   private HashMap<String, Device> connectedPorts;
+   private HashMap<String, DeviceImpl> connectedPorts;
 
    private ArrayList<RegisteredDevice> devices;
 
@@ -67,25 +67,25 @@ public class DeviceManager {
     * @return
     * @throws Exception
     */
-   public Device connect(CommPortIdentifier identifier) throws Exception {
-      Device connector = connectedPorts.get(identifier.getName());
+   public DeviceImpl connect(CommPortIdentifier identifier) throws Exception {
+      DeviceImpl connector = connectedPorts.get(identifier.getName());
       if (connector == null) {
-         connector = new Device(this);
+         connector = new DeviceImpl(this);
          connector.connect(identifier);
          connectedPorts.put(identifier.getName(), connector);
       }
       return connector;
    }
 
-   public Device connect(String name) throws Exception {
+   public DeviceImpl connect(String name) throws Exception {
       return connect(CommPortIdentifier.getPortIdentifier(name));
    }
 
-   public Device get(String name) {
+   public DeviceImpl get(String name) {
       return connectedPorts.get(name);
    }
 
-   protected void remove(Device connector) {
+   protected void remove(DeviceImpl connector) {
       RegisteredDevice device = getDeviceByRuntimeId(connector.getRuntimeId());
       device.setConnector(null);
       connectedPorts.remove(connector.getName());
@@ -100,8 +100,8 @@ public class DeviceManager {
       return CommPortIdentifier.getPortIdentifiers();
    }
 
-   public ArrayList<Device> listConnectedPorts() {
-      ArrayList<Device> connectors = new ArrayList<>();
+   public ArrayList<DeviceImpl> listConnectedPorts() {
+      ArrayList<DeviceImpl> connectors = new ArrayList<>();
       for (String key : connectedPorts.keySet()) {
          connectors.add(connectedPorts.get(key));
       }
@@ -175,7 +175,7 @@ public class DeviceManager {
             }
 
             // loops on connected ports to find runtimeId
-            for (Device connectedPort : listConnectedPorts()) {
+            for (DeviceImpl connectedPort : listConnectedPorts()) {
                if (device.getRuntimeId().equalsIgnoreCase(connectedPort.getRuntimeId())) {
                   device.setConnector(connectedPort);
                   device.setPort(connectedPort.getName());
@@ -190,8 +190,8 @@ public class DeviceManager {
                Enumeration<CommPortIdentifier> ports = listPorts();
                while (ports.hasMoreElements()) {
                   CommPortIdentifier port = ports.nextElement();
-                  Device p = connect(port);
-                  if (p.getRuntimeId() != null && !p.getRuntimeId().equals(Device.BLANK_GUID)) {
+                  DeviceImpl p = connect(port);
+                  if (p.getRuntimeId() != null && !p.getRuntimeId().equals(DeviceImpl.BLANK_GUID)) {
 
                      if (device.getRuntimeId().equalsIgnoreCase(p.getRuntimeId())) {
                         device.setConnector(p);

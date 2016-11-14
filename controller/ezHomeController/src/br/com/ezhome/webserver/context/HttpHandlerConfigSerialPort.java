@@ -1,8 +1,8 @@
 package br.com.ezhome.webserver.context;
 
-import br.com.ezhome.device.Device;
+import br.com.ezhome.device.DeviceImpl;
 import br.com.ezhome.device.DeviceManager;
-import br.com.ezhome.device.program.ProgramBuilder;
+import br.com.ezhome.lib.program.ProgramBuilder;
 import br.com.ezhome.webserver.HttpHandlerJWTAbstract;
 import com.sun.net.httpserver.HttpExchange;
 import gnu.io.CommPortIdentifier;
@@ -97,8 +97,8 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
       JSONObject json = new JSONObject();
       JSONArray devices = new JSONArray();
       if (!params.containsKey("connected") || params.get("connected").equals("true")) {
-         ArrayList<Device> connectors = DeviceManager.getInstance().listConnectedPorts();
-         for (Device connector : connectors) {
+         ArrayList<DeviceImpl> connectors = DeviceManager.getInstance().listConnectedPorts();
+         for (DeviceImpl connector : connectors) {
             if (!params.containsKey("portName") || params.get("portName").equals(connector.getName())) {
                JSONObject device = new JSONObject();
                device.put("portName", connector.getName());
@@ -148,7 +148,7 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
       he.getResponseHeaders().add("Content-type", "application/json");
       JSONObject json = new JSONObject();
       JSONObject parameters = getJSONRequest(he);
-      Device connector = DeviceManager.getInstance().get(parameters.getString("portName"));
+      DeviceImpl connector = DeviceManager.getInstance().get(parameters.getString("portName"));
       if (connector == null) {
          json.put("success", false);
          json.put("message", "Device " + parameters.getString("portName") + " is not connected.");
@@ -173,7 +173,7 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
       he.getResponseHeaders().add("Content-type", "application/json");
       JSONObject json = new JSONObject();
       JSONObject parameters = getJSONRequest(he);
-      Device device = DeviceManager.getInstance().connect(parameters.getString("portName"));
+      DeviceImpl device = DeviceManager.getInstance().connect(parameters.getString("portName"));
       ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
       builder.loadJSON(parameters.getJSONObject("program"));
       builder.sendProgram(device);

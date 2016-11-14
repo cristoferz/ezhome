@@ -17,7 +17,7 @@ public class PortReader extends Thread {
 
    private static final String END_OF_MESSAGE = "EOM";
 
-   private final Device connector;
+   private final DeviceImpl connector;
    private final InputStream in;
    private final StringBuilder stringBuilder;
    private final BufferedReader bufferedReader;
@@ -30,7 +30,7 @@ public class PortReader extends Thread {
     * @param connector
     * @param in 
     */
-   protected PortReader(Device connector, InputStream in) {
+   protected PortReader(DeviceImpl connector, InputStream in) {
       this.connector = connector;
       this.in = in;
       stringBuilder = new StringBuilder();

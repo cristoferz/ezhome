@@ -15,7 +15,7 @@ copy-jar:
 	cp -R ../controller/ezHomeController/dist/lib build/opt/ezhome/
 copy-site:
 	cp -R ../local-site build/opt/ezhome/
-build-deb: clean-build create-build copy-skeleton copy-jar copy-site
+build-deb: clean-build create-build copy-skeleton copy-jar
 	mkdir -p dist
 	dpkg-deb --build build dist
 release: build-jar build-deb 

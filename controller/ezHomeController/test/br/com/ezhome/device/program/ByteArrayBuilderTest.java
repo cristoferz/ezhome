@@ -6,6 +6,7 @@ package br.com.ezhome.device.program;
  * and open the template in the editor.
  */
 
+import br.com.ezhome.lib.program.ByteArrayBuilder;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
