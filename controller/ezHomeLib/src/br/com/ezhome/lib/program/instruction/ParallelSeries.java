@@ -71,7 +71,7 @@ public class ParallelSeries extends ProgramInstruction implements ProgramSeriesB
       JSONArray seriesArray = new JSONArray();
       result.put("Parallel", seriesArray);
       for (int i = 0; i < series.size(); i++) {
-         seriesArray.put(series.get(i).get(i).toJSON());
+         seriesArray.put(series.get(i).toJSON());
       }
       return result;
    }

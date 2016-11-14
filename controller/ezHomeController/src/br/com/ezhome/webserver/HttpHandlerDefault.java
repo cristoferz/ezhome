@@ -1,6 +1,6 @@
 package br.com.ezhome.webserver;
 
-import br.com.ezhome.config.ConfigFile;
+import br.com.ezhome.lib.config.ConfigFile;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,6 +1,6 @@
-package br.com.ezhome.config;
+package br.com.ezhome.lib.config;
 
-import br.com.ezhome.Controller;
+import br.com.ezhome.lib.logger.EzHomeLogger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -130,7 +130,19 @@ public final class ConfigFile {
    
    public void setLoggerLevel(Level level) {
       this.properties.setProperty("loggerLevel", level.getName());
-      Controller.getLogger().setLevel(level);
+      EzHomeLogger.getLogger().setLevel(level);
+   }
+   
+   public void setLibDir(File libDir) {
+      this.properties.setProperty("libDir", libDir.getAbsolutePath());
+   }
+   
+   public File getLibDir() {
+      File result = new File(this.properties.getProperty("libDir", "extLibs"));
+      if (!result.exists()) {
+         result.mkdirs();
+      }
+      return result;
    }
 
 }

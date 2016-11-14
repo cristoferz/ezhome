@@ -1,4 +1,4 @@
-package br.com.ezhome.standard;
+package br.com.ezhome.standard.modules;
 
 import br.com.ezhome.lib.modules.Module;
 import br.com.ezhome.lib.program.ProgramBuilder;
@@ -12,7 +12,7 @@ public class AlarmCentralModule extends Module {
 
    @Override
    public JSONObject getConfig() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return new JSONObject();
    }
 
    @Override

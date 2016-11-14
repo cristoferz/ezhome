@@ -6,12 +6,9 @@ import br.com.ezhome.webserver.context.HttpHandlerConfigDevice;
 import br.com.ezhome.webserver.context.HttpHandlerConfigDeviceProgram;
 import br.com.ezhome.webserver.context.HttpHandlerConfigSerialPort;
 import br.com.ezhome.webserver.context.HttpHandlerLogin;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import br.com.ezhome.webserver.context.HttpHandlerModules;
 import com.sun.net.httpserver.HttpServer;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
@@ -55,6 +52,7 @@ public class WebServer {
       httpServer.createContext("/config/device/program", new HttpHandlerConfigDeviceProgram());
       
       httpServer.createContext("/device/", new HttpHandlerDevice());
+      httpServer.createContext("/modules", new HttpHandlerModules());
       httpServer.start();
    }
 

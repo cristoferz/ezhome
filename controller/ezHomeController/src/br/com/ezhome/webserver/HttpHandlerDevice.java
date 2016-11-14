@@ -4,6 +4,8 @@ import br.com.ezhome.device.FirmwareUploader;
 import br.com.ezhome.device.DeviceImpl;
 import br.com.ezhome.device.DeviceManager;
 import br.com.ezhome.device.model.DeviceModels;
+import br.com.ezhome.lib.LibManager;
+import br.com.ezhome.lib.compiler.EzHomeCompiler;
 import br.com.ezhome.lib.program.ProgramBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
@@ -99,6 +101,29 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                      JSONObject obj = new JSONObject(program);
                      ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, "0123456789ABCDEFFEDCBA9876543210", "0123456789ABCDEFFEDCBA9876543210");
                      builder.loadJSON(obj);
+                     builder.sendProgram(connector);
+                     JSONObject json = new JSONObject();
+                     json.put("success", true);
+                     json.put("result", "OK");
+                     exchange.sendResponseHeaders(200, json.toString().getBytes().length);
+                     os.write(json.toString().getBytes());
+                     break;
+                  default:
+                     throw new Exception("Invalid method: " + exchange.getRequestMethod());
+               }
+               break;
+            case "/device/compileAndSend":
+               switch (exchange.getRequestMethod()) {
+                  case "POST":
+                     JSONObject request = getJSONRequest(exchange);
+                     
+                     EzHomeCompiler compiler = new EzHomeCompiler();
+                     compiler.parse(request.getJSONObject("program"));
+                     compiler.setDeviceModel(LibManager.getInstance().getDeviceModel(request.getString("deviceModel")));
+                     ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, request.getString("runtimeId"), request.getString("versionId"));
+                     compiler.compile(builder);
+                     DeviceImpl connector = DeviceManager.getInstance().connect(request.getString("portName"));
+                     System.out.println(builder.toJSON().toString(3));
                      builder.sendProgram(connector);
                      JSONObject json = new JSONObject();
                      json.put("success", true);
