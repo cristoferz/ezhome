@@ -12,3 +12,4 @@
 /controller/ezHomeLib/dist/
 /controller/ezHomeStandardLib/nbproject/private/
 /controller/ezHomeStandardLib/dist/
+*.log.0
