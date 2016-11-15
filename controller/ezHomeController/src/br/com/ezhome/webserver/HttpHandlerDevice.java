@@ -123,7 +123,7 @@ public class HttpHandlerDevice extends HttpHandlerAbstract {
                      ProgramBuilder builder = new ProgramBuilder((byte) 0x8, (byte) 0x8, request.getString("runtimeId"), request.getString("versionId"));
                      compiler.compile(builder);
                      DeviceImpl connector = DeviceManager.getInstance().connect(request.getString("portName"));
-                     System.out.println(builder.toJSON().toString(3));
+                     //System.out.println(builder.toJSON().toString(3));
                      builder.sendProgram(connector);
                      JSONObject json = new JSONObject();
                      json.put("success", true);

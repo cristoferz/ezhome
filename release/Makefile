@@ -16,6 +16,13 @@ copy-jar:
 copy-site:
 	cp -R ../local-site build/opt/ezhome/
 build-deb: clean-build create-build copy-skeleton copy-jar
-	mkdir -p dist
-	dpkg-deb --build build dist
-release: build-jar build-deb 
+	mkdir -p binary
+	dpkg-deb --build build binary
+index-repo:
+	dpkg-scanpackages binary /dev/null | gzip -9c > binary/Packages.gz
+send-remote: index-repo
+	scp -i ~/git/desktop-configs/scripts/CRISTOFER.pem binary/* ec2-user@ec2-52-67-166-196.sa-east-1.compute.amazonaws.com:/var/www/html/repository/binary/
+
+release: build-jar build-deb send-remote
+
+	
