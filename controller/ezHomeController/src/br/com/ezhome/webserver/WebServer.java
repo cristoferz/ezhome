@@ -45,14 +45,14 @@ public class WebServer {
       //httpServer.setExecutor(null);
       httpServer.createContext("/", new HttpHandlerDefault());
       
-      httpServer.createContext("/activation", new HttpHandlerActivation());
-      httpServer.createContext("/login", new HttpHandlerLogin());
-      httpServer.createContext("/config/serialPort", new HttpHandlerConfigSerialPort());
-      httpServer.createContext("/config/device", new HttpHandlerConfigDevice());
-      httpServer.createContext("/config/device/program", new HttpHandlerConfigDeviceProgram());
+      httpServer.createContext("/api/activation", new HttpHandlerActivation());
+      httpServer.createContext("/api/login", new HttpHandlerLogin());
+      httpServer.createContext("/api/config/serialPort", new HttpHandlerConfigSerialPort());
+      httpServer.createContext("/api/config/device", new HttpHandlerConfigDevice());
+      httpServer.createContext("/api/config/device/program", new HttpHandlerConfigDeviceProgram());
       
-      httpServer.createContext("/device/", new HttpHandlerDevice());
-      httpServer.createContext("/modules", new HttpHandlerModules());
+      httpServer.createContext("/api/device/", new HttpHandlerDevice());
+      httpServer.createContext("/api/modules", new HttpHandlerModules());
       httpServer.start();
    }
 

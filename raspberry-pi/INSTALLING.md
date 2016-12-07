@@ -76,7 +76,7 @@ Install these packages without verification? [y/N] y
 ```
 After that, ezHome libraries will be installed successfully.
 
-Ps.: For new, is normal to see the message
+Ps.: Is normal to see the message
 
 ```
 WARNING: The following packages cannot be authenticated!

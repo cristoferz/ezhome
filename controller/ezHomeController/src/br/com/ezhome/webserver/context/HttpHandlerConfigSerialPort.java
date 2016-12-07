@@ -25,7 +25,7 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
       try (OutputStream os = he.getResponseBody()) {
          String path = he.getRequestURI().getPath();
          switch (path) {
-            case "/config/serialPort":
+            case "/api/config/serialPort":
                switch (he.getRequestMethod()) {
                   case "GET":
                      listSerialPort(he, os);
@@ -40,7 +40,7 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
                      throw new Exception("Invalid method \"" + he.getRequestMethod() + "\" for path \"" + path + "\"");
                }
                break;
-            case "/config/serialPort/scan":
+            case "/api/config/serialPort/scan":
                switch (he.getRequestMethod()) {
                   case "POST":
                      scanPorts(he, os);
@@ -49,7 +49,7 @@ public class HttpHandlerConfigSerialPort extends HttpHandlerJWTAbstract {
                      throw new Exception("Invalid method \"" + he.getRequestMethod() + "\" for path \"" + path + "\"");
                }
                break;
-            case "/config/serialPort/autoScan":
+            case "/api/config/serialPort/autoScan":
                switch (he.getRequestMethod()) {
                   case "POST":
                      autoScan(he, os);
