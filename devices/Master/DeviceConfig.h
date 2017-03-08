@@ -26,6 +26,7 @@ class DeviceConfig {
     void reset(); // resets configuration to all inputs
     
     int getAddress(int pin); // returns boolean address in memory for digital I/O pin
+    int getPin(int address); // return pin number for specified address
     byte getPwmAddress(int pin); // returns numeric address in memory for analog PWM pin
     
   private:

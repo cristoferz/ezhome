@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Memory.h"
 #include "Program.h"
+#include "DeviceConfig.h"
 
 #ifndef Engine_h
 #define Engine_h
@@ -24,7 +25,7 @@ enum comparison {
 
 class Engine {  
   public:
-    Engine(int eepromAddress, Program* program, Memory* memory);
+    Engine(int eepromAddress, Program* program, Memory* memory, DeviceConfig* deviceConfig);
     
     void preScan(); // call this in setup, or after a new program is downloaded
     void solveLogic(); // call this in loop, after scanInputs and before scanOutputs
@@ -34,11 +35,13 @@ class Engine {
     boolean getStatus();
     void readFromEeprom();
     void writeToEeprom();
+    void scanTempSens(int port);
     
   private:
     int _eepromAddress;
     Program* _program;
     Memory* _memory;
+    DeviceConfig* _deviceConfig;
     int _instructionPointer;
     byte _bitsPerBooleanAddress;
     byte _bitsPerNumericAddress;
@@ -70,6 +73,7 @@ class Engine {
     void tmrOn();
     void tmrOff();
     void tmr(boolean onDelay);
+    void temperatureRead();
     void parallelStart();
     void cntUp();
     void cntDn();

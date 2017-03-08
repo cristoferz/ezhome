@@ -211,6 +211,11 @@ void SerialPort::processLine(String &line) {
       }
     }
   }
+  else if (line.startsWith("scantempsens ")) {
+    String port = line.substring(13);
+    int address = port.toInt();
+    _engine->scanTempSens(address);
+  }
   else {
     Serial.print(F("Error=no such command: "));
     Serial.println(line);

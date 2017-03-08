@@ -13,7 +13,7 @@ DeviceConfig deviceConfig = DeviceConfig(0); // uses first bytes of EEPROM
 Program program = Program(DEVICE_CONFIG_EEPROM_BYTES + ENGINE_EEPROM_BYTES);
 Memory memory = Memory(); // these are the current values of coils and analog values, etc.
 IO io = IO(&deviceConfig, &memory);
-Engine engine = Engine(DEVICE_CONFIG_EEPROM_BYTES, &program, &memory);
+Engine engine = Engine(DEVICE_CONFIG_EEPROM_BYTES, &program, &memory, &deviceConfig);
 SerialPort serialPort = SerialPort(&io, &memory, &deviceConfig, &program, &engine);
 StatusLED statusLED = StatusLED(STATUS_LED_PIN, &engine);
 
