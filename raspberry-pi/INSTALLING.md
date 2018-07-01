@@ -56,19 +56,19 @@ sudo apt-get install ezhome
 The output will be something like the following
 
 ```
-pi@raspberrypi:~ $ sudo apt-get install ezhome
+pi@raspberrypi:~ $ sudo apt-get install ezhome 
 Reading package lists... Done
 Building dependency tree       
 Reading state information... Done
 The following extra packages will be installed:
-  libpq5 postgresql-9.4 postgresql-client-9.4 postgresql-client-common postgresql-common ssl-cert
+  libpq5 librxtx-java libxi6 libxrender1 libxtst6 oracle-java8-jdk postgresql-9.4 postgresql-client-9.4 postgresql-client-common postgresql-common ssl-cert x11-common
 Suggested packages:
   oidentd ident-server locales-all postgresql-doc-9.4 openssl-blacklist
 The following NEW packages will be installed:
-  ezhome libpq5 postgresql-9.4 postgresql-client-9.4 postgresql-client-common postgresql-common ssl-cert
-0 upgraded, 7 newly installed, 0 to remove and 26 not upgraded.
-Need to get 19.4 MB of archives.
-After this operation, 22.3 MB of additional disk space will be used.
+  ezhome libpq5 librxtx-java libxi6 libxrender1 libxtst6 oracle-java8-jdk postgresql-9.4 postgresql-client-9.4 postgresql-client-common postgresql-common ssl-cert x11-common
+0 upgraded, 13 newly installed, 0 to remove and 26 not upgraded.
+Need to get 68.2 MB of archives.
+After this operation, 196 MB of additional disk space will be used.
 Do you want to continue? [Y/n] y
 WARNING: The following packages cannot be authenticated!
   ezhome
@@ -83,7 +83,7 @@ WARNING: The following packages cannot be authenticated!
   ezhome
 ```
 
-That's because ezHome .deb package is not signed (yet...). 
+That's because ezHome .deb package is not signed (we are working on this...). 
 
 ## Innitializing ezHome Database
 

@@ -18,7 +18,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="ezHomeController Daemon"
 NAME=ezhome
-DAEMON="/usr/bin/java -- -jar /opt/ezhome/ezHomeController.jar"
+DAEMON="/usr/bin/java -- -Djava.library.path=/usr/lib/jni -jar /opt/ezhome/ezHomeController.jar"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 CHUID=root

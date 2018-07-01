@@ -1,3 +1,5 @@
+#include <Mouse.h>
+
 /*
  * EEPROM Clear
  *

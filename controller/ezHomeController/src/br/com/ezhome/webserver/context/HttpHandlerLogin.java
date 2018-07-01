@@ -17,7 +17,7 @@ public class HttpHandlerLogin extends HttpHandlerAbstract {
    @Override
    public void handleRequest(HttpExchange he) throws Exception {
       switch (he.getRequestURI().getPath()) {
-         case "/login/token":
+         case "/api/login/token":
             switch (he.getRequestMethod()) {
                case "POST":
                   JSONObject data = new JSONObject();

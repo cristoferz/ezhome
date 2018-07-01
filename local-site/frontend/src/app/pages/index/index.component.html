@@ -1,0 +1,22 @@
+<p-messages [value]="msgs"></p-messages>
+
+<p-fieldset legend="Header" toggleable="true">
+   <p><a href="http://www.primefaces.org/primeng/#">PrimeNG Documentation</a></p>
+   <p><a href="https://github.com/angular/angular-cli">Angular CLI Documentation</a></p>
+   <p><a href="http://plnkr.co/edit/LMQNNF72hZmRq4lV2IBN?p=preview">Plunkr with advanced routing</a></p>
+   <input type="text" pInputText [(ngModel)]="message" />
+   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque id urna ullamcorper ligula tristique pretium. Phasellus
+      et convallis metus. Vivamus sapien sem, lacinia quis fermentum sed, ullamcorper et eros. Proin tincidunt risus in convallis
+      congue. Ut vehicula interdum nibh in rhoncus. Phasellus bibendum arcu dignissim pharetra semper. Etiam vel imperdiet
+      justo. Ut molestie orci nec nunc pellentesque cursus. Donec et laoreet nibh, ut congue tortor. Proin non pulvinar ante,
+      id aliquam mauris. Quisque metus lectus, vehicula a commodo at, ornare in mi.
+   </p>
+   <p>
+      Etiam sed eleifend eros. Maecenas erat felis, rutrum euismod lorem blandit, cursus commodo lorem. Donec vestibulum, libero
+      a pellentesque semper, justo sem pharetra mi, vel feugiat neque velit quis metus. Etiam ut sollicitudin ipsum. Nam
+      efficitur ipsum sit amet nibh sagittis bibendum. Maecenas rutrum ipsum neque, quis dignissim augue fringilla vitae.
+      Vestibulum a diam at turpis tristique faucibus nec feugiat lorem. Sed tempor neque sed nisl tristique, sit amet faucibus
+      dui condimentum.
+   </p>
+   <button pButton type="button" icon="fa-check" iconPos="left" label="Click for message" (click)="showMessage()"></button>
+</p-fieldset>

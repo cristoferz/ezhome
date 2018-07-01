@@ -34,7 +34,8 @@ public class HttpHandlerDefault extends HttpHandlerAbstract {
                fileResponse(he, file);
             }
          } else {
-            response(404, "File \"" + he.getRequestURI().getPath() + "\" not found", he);
+            fileResponse(he, new File(folder, "index.html"));
+            //response(404, "File \"" + he.getRequestURI().getPath() + "\" not found", he);
             return;
          }
       } catch (IOException ex) {
