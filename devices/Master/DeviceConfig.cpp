@@ -60,6 +60,11 @@ int DeviceConfig::getAddress(int pin) {
   return pin - MIN_PIN_NUMBER;
 }
 
+int DeviceConfig::getPin(int address) {
+  // return pin for address
+  return address + MIN_PIN_NUMBER;
+}
+
 byte DeviceConfig::getPwmAddress(int pin) {
   if(!isPwm(pin)) {
     return 0; // this is actually an error... not sure what to do about it here

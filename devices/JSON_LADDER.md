@@ -502,3 +502,36 @@ The example show a comparation of type >= of the value readed from address 0 (pr
 constant 2. If the value of the port is greater or equals 2, the resulting rungCondition will be true, otherwise false
 respecting the preceding rungCondition too.
 
+### External Devices
+Sometimes is necessary to use external devices and sensors connected to ezHome. This devices are threated by an especific
+instruction called "extDevice". Each external device has its own implementation, so theirs descriptions follow.
+
+#### Temperature sensors
+Some temperature sensor uses OneWire protocol to communicate to arduino. DS18B20 is an example of this. An example of 
+instruction follows:
+
+    { "TemperatureSensor": {
+       "address": 4, 
+       "idValue": "1234567890ABCDEF",
+       "readDelay": { "value": 10000 },
+       "elapsedAddress": 10,
+       "outputAddress": 100,
+       "failAddress": 5
+    }}
+
+The logics for this type of sensors is based on the following values, with explanation about each:
+* address: Identifies the phisical port where the sensor is connected. In this case, is possible (and recommended) that 
+many sensors are connected to the same port, but is possible to connect in other ports. In the specific case of DS18B20, 
+is necessary a pull-up resistor of 4K7 to function. 
+* idValue: Identifies the sensor on the bus. This value is unique per sensor, so its necessary to identify what sensor 
+you are using. On the end of this session is some explanation on how to do this.
+* readDelay: Specifies the delay between readings to the sensor. Other cycles assumes te last readed value. As reading 
+sensor values causes some delay on whole device cycle, is recommended to reduce the reading frequency to as lower as you 
+can, avoiding some interference on others logics.
+* elapsedAddress: Specifies the address to keep the elapsed time between last read. Have no real use for logics.
+* outputAddress: Address where readed values is stored and keeped until next read.
+* failAddress: Address to indicates a fail on reading to sensor, usually because the sensor with specified address is not 
+present on the port. In the case of failure, the output value will set to -127. 
+
+The rungCondition for this instruction is true only on read cycles, as an alert of read.  
+

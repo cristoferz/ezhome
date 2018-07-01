@@ -1,10 +1,14 @@
 #include "Engine.h"
 #include <EEPROM.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
-Engine::Engine(int eepromAddress, Program* program, Memory* memory) {
+
+Engine::Engine(int eepromAddress, Program* program, Memory* memory, DeviceConfig* deviceConfig) {
   _eepromAddress = eepromAddress;
   _program = program;
   _memory = memory;
+  _deviceConfig = deviceConfig;
   _errorCode = ERROR_NONE;
   _running = false;
   _preScan = false;
@@ -94,16 +98,16 @@ byte Engine::processNextInstruction() { // returns instruction
   instruction = loadBitsIntoInstruction(instruction, 3);
 
   switch(instruction) {
-    case 0x00: // Coil
+    case 0x00: // Coil   000
       coil();
       return instruction; 
-    case 0x01: // NO
+    case 0x01: // NO     001
       contactNO();
       return instruction; 
-    case 0x02: // NC
+    case 0x02: // NC     010
       contactNC();
       return instruction; 
-    case INSTRUCTION_SERIES_END: // SeriesEnd
+    case INSTRUCTION_SERIES_END: // SeriesEnd 011
       return instruction; 
   }
   
@@ -111,27 +115,27 @@ byte Engine::processNextInstruction() { // returns instruction
   instruction = loadBitsIntoInstruction(instruction, 2);
   
   switch(instruction) {
-    case 0x10: // RisingEdge
+    case 0x10: // RisingEdge 10000
       risingEdge();
       return instruction;
-    case 0x11: // FallingEdge
+    case 0x11: // FallingEdge 10001
       fallingEdge();
       return instruction;
-    case 0x12: // SetReset
+    case 0x12: // SetReset   10010
       setReset();
       return instruction;
-    case 0x13: // TmrON
+    case 0x13: // TmrON      10011
       tmrOn();
       return instruction;
-    case 0x14: // TmrOFF
+    case 0x14: // TmrOFF     10100
       tmrOff();
       return instruction;
     case 0x15: // ParallelStart
-      parallelStart(); // recursive call (parallelStart() will call processInstruction())
+      parallelStart(); // recursive call (parallelStart() will call processInstruction()) 10101
+      return instruction; 
+    case 0x16: // ParallelEnd 101110
       return instruction;
-    case 0x16: // ParallelEnd
-      return instruction;
-    case 0x17: // CntUP or CntDN (need to look at next bit)
+    case 0x17: // CntUP or CntDN (need to look at next bit) 10111 (101110 or 101111)
       instruction = loadBitsIntoInstruction(instruction, 1);
       if(instruction == 0x2E) {
         cntUp();
@@ -140,22 +144,22 @@ byte Engine::processNextInstruction() { // returns instruction
         cntDn();
       }
       return instruction;
-    case 0x18: // Comparison ==
+    case 0x18: // Comparison == 11000
       compare(equalTo);
       return instruction;
-    case 0x19: // Comparison >
+    case 0x19: // Comparison > 11001
       compare(greaterThan);
       return instruction;
-    case 0x1A: // Comparison >=
+    case 0x1A: // Comparison >= 11010
       compare(greaterThanOrEqual);
       return instruction;
-    case 0x1B: // Comparison <
+    case 0x1B: // Comparison <  11011
       compare(lessThan);
       return instruction;
-    case 0x1C: // Comparison <=
+    case 0x1C: // Comparison <= 11100
       compare(lessThanOrEqual);
       return instruction;
-    case 0x1D: // Comparison !=
+    case 0x1D: // Comparison != 11101
       compare(notEqual);
       return instruction;
   }
@@ -164,28 +168,46 @@ byte Engine::processNextInstruction() { // returns instruction
   instruction = loadBitsIntoInstruction(instruction, 2);
   
   switch(instruction) {
-    case 0x78: // Math +
+    case 0x78: // Math + 1111000
       mathAdd();
       return instruction;
-    case 0x79: // Math -
+    case 0x79: // Math - 1111001
       mathSubtract();
       return instruction;
-    case 0x7A: // Math *
+    case 0x7A: // Math * 1111010
       mathMultiply();
       return instruction;
-    case 0x7B: // Math /
+    case 0x7B: // Math / 1111011
       mathDivide();
       return instruction;
-    case 0x7C: // Math Choose #
+    case 0x7C: // Math Choose # 1111100
       mathChooseNumber();
       return instruction;
     case 0x7D:
-      // Monitor/Memory
+      // Monitor/Memory         11111101
       break;
+    case 0x7E:
+      // External devices       11111110
+      int typ = loadBitsIntoInstruction(0, 3);
+      switch(typ) {
+        case 0x00:
+          // DS18B20 sensor         000
+          temperatureRead();
+          return instruction;
+        case 0x01:
+          // Servo motors           001
+          // not implemented yet
+          break;
+      }
+      break;
+    //case 0x7F:
+      // not used (can conflict with final)
+    //break;
+      
       
   }
   
-  // if we get this far, then the only valid possibipality left is an end-of-program instruction
+  // if we get this far, then the only valid possibility left is an end-of-program instruction
   instruction = loadBitsIntoInstruction(instruction, 1);
 
   if(instruction == 0xFF) {
@@ -350,6 +372,66 @@ void Engine::tmr(boolean onDelay) {
     _memory->writeNumeric(elapsedAddress, elapsedValue);
   }
   _rungCondition = done;
+}
+
+void Engine::temperatureRead() {  
+  // Gets bus port
+  int busPort = _deviceConfig->getPin(getBooleanAddress());
+  // Reads Device Address
+  
+  DeviceAddress sensor;
+  for (int i=0;i<8;i++) {
+    sensor[i] = loadBitsIntoInstruction(0, 8);
+  }
+  // Gets delay between reads
+  NumericMemoryValue delayValue = getNumericValue();
+  // Gets elapsed time address
+  byte elapsedAddress = getNumericAddress();
+  // Get output value
+  byte outputAddress = getNumericAddress();
+  // Endereco para indicação de falha
+  int faultPort = getBooleanAddress();
+  
+  boolean runCondition = _rungCondition;
+  
+  if(_preScan) { // reset all timers during pre-scan
+    runCondition = false;
+  }
+
+  NumericMemoryValue elapsedValue;
+  // validates delay
+  elapsedValue = _memory->readNumeric(elapsedAddress);
+  if(elapsedValue.isFloat) {
+    elapsedValue.isFloat = false;
+    elapsedValue.value.longValue = 0;
+  }
+  elapsedValue.value.longValue += (long)_elapsed; 
+  _memory->writeNumeric(elapsedAddress, elapsedValue);
+  if(runCondition) {
+    _rungCondition = false;
+    if(!delayValue.isFloat && elapsedValue.value.longValue >= delayValue.value.longValue
+        || delayValue.isFloat && elapsedValue.value.longValue >= delayValue.value.floatValue) {
+      // Perform a read
+      OneWire oneWire(busPort);
+      DallasTemperature sensors(&oneWire);
+      sensors.begin();
+
+      if (sensors.requestTemperaturesByAddress(sensor)) {
+        float result = sensors.getTempC(sensor);
+        NumericMemoryValue resultValue;
+        resultValue.isFloat = true;
+        resultValue.value.floatValue = result;
+        _memory->writeNumeric(outputAddress, resultValue);
+        _memory->writeBoolean(faultPort, false);
+        _rungCondition = true;
+      } else {
+        // Not connected
+        _memory->writeBoolean(faultPort, true);
+      }
+    }
+  }
+  //_rungCondition = done;
+  
 }
 
 void Engine::parallelStart() {
@@ -663,6 +745,33 @@ void Engine::mathChooseNumber() {
   else {
     _memory->writeNumeric(resultAddress, operand2Value);
   }
+}
+
+void printSensorAddress(DeviceAddress deviceAddress) {
+  for (uint8_t i = 0; i < 8; i++) {
+    // add zeros if necessary
+    if (deviceAddress[i] < 16) Serial.print("0");
+    Serial.print(deviceAddress[i], HEX);
+  }
+}
+
+
+void Engine::scanTempSens(int port) {
+  OneWire oneWire(port);
+  DallasTemperature sensors(&oneWire);
+  sensors.begin();
+  Serial.print("Searching temperature sensors on port ");
+  Serial.print(port);
+  Serial.print(": ");
+  Serial.print(sensors.getDeviceCount(), DEC);
+  Serial.println(" found");
+  for (int i=0; i < sensors.getDeviceCount(); i++) {
+    DeviceAddress t;
+    sensors.getAddress(t, i);
+    printSensorAddress(t);
+    Serial.println();
+  }
+  
 }
 
 boolean Engine::getBooleanValue() {

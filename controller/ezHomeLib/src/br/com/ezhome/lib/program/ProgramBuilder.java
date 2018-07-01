@@ -14,6 +14,7 @@ import br.com.ezhome.lib.program.instruction.ParallelSeries;
 import br.com.ezhome.lib.program.instruction.ProgramInstruction;
 import br.com.ezhome.lib.program.instruction.RisingEdge;
 import br.com.ezhome.lib.program.instruction.SetReset;
+import br.com.ezhome.lib.program.instruction.TemperatureSensor;
 import br.com.ezhome.lib.program.instruction.TimerOff;
 import br.com.ezhome.lib.program.instruction.TimerOn;
 import java.io.IOException;
@@ -279,6 +280,14 @@ public class ProgramBuilder implements ProgramSeriesBuilder {
          return new Comparator(this, json);
       } else if (json.has("MathOperation")) {
          return new MathOperation(this, json);
+      } else if (json.has("TemperatureSensor")) {
+         return new TemperatureSensor(this, 
+                 json.getJSONObject("TemperatureSensor").getString("idValue"),
+                 NumericValue.fromJSON(this, json.getJSONObject("TemperatureSensor").getJSONObject("readDelay")), 
+                 getAddress(json.getJSONObject("TemperatureSensor").getInt("inputAddress")),
+                 getAddress(json.getJSONObject("TemperatureSensor").getInt("elapsedAddress")),
+                 getAddress(json.getJSONObject("TemperatureSensor").getInt("outputAddress")),
+                 getAddress(json.getJSONObject("TemperatureSensor").getInt("failAddress")));
       } else {
          throw new Exception("Nenhuma instrução valida em "+json.toString(2));
       }
